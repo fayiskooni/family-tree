@@ -22,11 +22,11 @@ export const protectRoute = async (req, res, next) => {
       [email]
     );
 
-    if (!user) {
+    if (!user.rows.length) {
       return res.status(401).json({ message: "Unauthorized - User not found" });
     }
 
-    req.user = user;
+    req.user = user.rows[0];
 
     next();
   } catch (error) {
