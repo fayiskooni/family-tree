@@ -5,6 +5,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.route.js";
 import familyRoutes from "./routes/family.route.js"
+import membersRoutes from "./routes/members.route.js"
 
 import connectDB from "./lib/db.js";
 
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", familyRoutes);
+app.use("/api/auth", membersRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port${PORT}`);
