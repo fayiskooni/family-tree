@@ -5,6 +5,7 @@ import {
   deleteAllFamily,
   deleteFamily,
   editFamily,
+  getAllFamily,
   getFamily,
 } from "../controllers/family.controller.js";
 
@@ -15,8 +16,9 @@ router.use(protectRoute);
 
 router.post("/family", createFamily);
 router.get("/family/:id", getFamily);
-router.patch("/edit-family/:id", editFamily);
-router.delete("/delete-family/:id", deleteFamily);
-router.delete("/delete-all-family", deleteAllFamily);
+router.get("/families", getAllFamily);
+router.patch("/family/:id", editFamily);
+router.delete("/family/:id", deleteFamily);
+router.delete("/families", deleteAllFamily);
 
 export default router;

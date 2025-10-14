@@ -5,6 +5,7 @@ import {
   deleteAllMembers,
   deleteMember,
   editMember,
+  getAllMembers,
   getMember,
 } from "../controllers/members.controller.js";
 
@@ -15,8 +16,9 @@ router.use(protectRoute);
 
 router.post("/member", createMember);
 router.get("/member/:id", getMember);
-router.patch("/edit-member/:id", editMember);
-router.delete("/delete-member/:id", deleteMember);
-router.delete("/delete-all-family", deleteAllMembers);
+router.get("/members", getAllMembers);
+router.patch("/member/:id", editMember);
+router.delete("/member/:id", deleteMember);
+router.delete("/members", deleteAllMembers);
 
 export default router;

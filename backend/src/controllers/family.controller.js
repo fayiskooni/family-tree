@@ -42,6 +42,17 @@ export async function getFamily(req, res) {
   }
 }
 
+export async function getAllFamily(req, res) {
+  try {
+    const result = await client.query("SELECT family_name FROM families");
+
+    return res.status(200).json({ success: true, data: result.rows});
+  } catch (error) {
+    console.log("Error in Fetching Families", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export async function editFamily(req, res) {
   const family_name = req.body.family_name;
   const family_id = req.params.id;

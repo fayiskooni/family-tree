@@ -48,6 +48,17 @@ export async function getMember(req, res) {
   }
 }
 
+export async function getAllMembers(req, res) {
+  try {
+    const result = await client.query("SELECT name FROM members");
+
+    return res.status(200).json({ success: true, data: result.rows});
+  } catch (error) {
+    console.log("Error in Fetching Members", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export async function editMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body;
