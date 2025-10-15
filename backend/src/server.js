@@ -8,6 +8,7 @@ import familyRoutes from "./routes/family.route.js"
 import familyMemberRoutes from "./routes/familyMember.route.js"
 import membersRoutes from "./routes/members.route.js"
 import coupleRoutes from "./routes/couple.route.js"
+import parentChildRoutes from "./routes/parentChild.route.js"
 
 import connectDB from "./lib/db.js";
 
@@ -28,6 +29,7 @@ app.use("/api/auth", familyRoutes);
 app.use("/api/auth", familyMemberRoutes);
 app.use("/api/auth", membersRoutes);
 app.use("/api/auth", coupleRoutes);
+app.use("/api/auth", parentChildRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port${PORT}`);

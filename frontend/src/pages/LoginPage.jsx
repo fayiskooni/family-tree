@@ -4,7 +4,6 @@ import useLogin from "../hooks/useLogin";
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState({
-    fullName: "",
     email: "",
     password: "",
   });

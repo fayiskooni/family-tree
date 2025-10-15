@@ -21,7 +21,7 @@ export async function createFamilyMember(req, res) {
     if (!family_id) {
       return res.status(400).json({ message: "Family not found" });
     }
-    checkCombination(family_id, member_id).then((exists) => {
+    checkCombination(family_id, member_id).then(async (exists) => {
       if (exists) {
         return res.status(400).json({ message: "Combination already exists!" });
       }
