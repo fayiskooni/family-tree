@@ -24,14 +24,15 @@ export async function createFamily(req, res) {
 
 export async function getFamily(req, res) {
   const family_id = req.params.id;
+  const userid = req.user.userid;
 
   try {
     if (!family_id) {
       return res.status(400).json({ message: "Family not found" });
     } else {
       const result = await client.query(
-        "SELECT family_name FROM families WHERE family_id =($1)",
-        [family_id]
+        "SELECT family_name FROM families WHERE family_id =($1) AND created_user = ($2)",
+        [family_id, userid]
       );
 
       return res.status(200).json({ success: true, data: result.rows[0] });
@@ -43,10 +44,14 @@ export async function getFamily(req, res) {
 }
 
 export async function getAllFamily(req, res) {
+  const userid = req.user.userid;
   try {
-    const result = await client.query("SELECT family_name FROM families");
+    const result = await client.query(
+      "SELECT family_name FROM families WHERE created_user = ($1)",
+      [userid]
+    );
 
-    return res.status(200).json({ success: true, data: result.rows});
+    return res.status(200).json({ success: true, data: result.rows });
   } catch (error) {
     console.log("Error in Fetching Families", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -94,8 +99,11 @@ export async function deleteFamily(req, res) {
 }
 
 export async function deleteAllFamily(req, res) {
+  const userid = req.user.userid;
   try {
-    await client.query("DELETE FROM families");
+    await client.query("DELETE FROM families WHERE created_user = ($1)", [
+      userid,
+    ]);
 
     return res.status(200).json({ success: true });
   } catch (error) {

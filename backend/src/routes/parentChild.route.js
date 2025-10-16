@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { createParentChild, deleteParentChild, getParentChilds } from "../controllers/parentChild.controller.js";
+import { createParentChild, deleteParentChild, getParentChild } from "../controllers/parentChild.controller.js";
 
 const router = express.Router();
 
@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(protectRoute);
 
 router.post("/parent/child/:id", createParentChild);
-router.get("/parent/children/:id", getParentChilds);
+router.get("/parent/children/:id", getParentChild);
 router.delete("/parent/child/:id", deleteParentChild);
 
 

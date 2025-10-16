@@ -4,26 +4,35 @@ import { Routes, Route, Navigate } from "react-router";
 import HomePage from "./pages/HomePage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
-import FamilyCreationPage from "./pages/FamilyCreationPage.jsx";
-import FamilyRelationPage from "./pages/FamilyRelationPage.jsx";
-import FamilyTreePage from "./pages/FamilyTreePage.jsx";
+import MembersPage from "./pages/MembersPage.jsx";
 
 import useAuthUser from "./hooks/useAuthUser.js";
+import Layout from "./components/Layout.jsx";
 import PageLoader from "./components/PageLoader.jsx";
+import { useThemeStore } from "./store/useThemeStore.js";
 
 const App = () => {
-   const { isLoading, authUser } = useAuthUser();
+  const { isLoading, authUser } = useAuthUser();
+  const { theme } = useThemeStore();
 
-   const isAuthenticated = Boolean(authUser);
+  const isAuthenticated = Boolean(authUser);
 
-   if (isLoading) return <PageLoader />;
-  
+  if (isLoading) return <PageLoader />;
+
   return (
-    <div className="h-screen" data-theme="dim">
+    <div className="h-screen" data-theme={theme}>
       <Routes>
         <Route
           path="/"
-          element={authUser ? <HomePage /> : <Navigate to="/login" />}
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <HomePage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
         <Route
           path="/signup"
@@ -34,16 +43,16 @@ const App = () => {
           element={!authUser ? <LoginPage /> : <Navigate to="/" />}
         />
         <Route
-          path="/familycreation"
-          element={authUser ? <FamilyCreationPage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/familyrelation"
-          element={authUser ? <FamilyRelationPage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/familytree"
-          element={authUser ? <FamilyTreePage /> : <Navigate to="/login" />}
+          path="/members"
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <MembersPage />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
       </Routes>
     </div>

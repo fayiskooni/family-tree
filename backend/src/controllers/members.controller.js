@@ -3,6 +3,7 @@ import { client } from "../lib/db.js";
 export async function createMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body;
+  const userid = req.user.userid;
 
   try {
     if (!name || !gender || !age) {
@@ -16,8 +17,8 @@ export async function createMember(req, res) {
       });
     } else {
       await client.query(
-        "INSERT INTO members (name, gender, age, date_of_birth, date_of_death, blood_group) VALUES ($1,$2,$3,$4,$5,$6)",
-        [name, gender, age, date_of_birth, date_of_death, blood_group]
+        "INSERT INTO members (name, gender, age, date_of_birth, date_of_death, blood_group, created_user) VALUES ($1,$2,$3,$4,$5,$6,$7)",
+        [name, gender, age, date_of_birth, date_of_death, blood_group, userid]
       );
 
       return res.status(201).json({ success: true });
@@ -30,14 +31,15 @@ export async function createMember(req, res) {
 
 export async function getMember(req, res) {
   const member_id = req.params.id;
+  const userid = req.user.userid;
 
   try {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });
     } else {
       const result = await client.query(
-        "SELECT * FROM members WHERE member_id =($1)",
-        [member_id]
+        "SELECT * FROM members WHERE member_id =($1) AND created_user = ($2)",
+        [member_id, userid]
       );
 
       return res.status(200).json({ success: true, data: result.rows[0] });
@@ -48,11 +50,48 @@ export async function getMember(req, res) {
   }
 }
 
-export async function getAllMembers(req, res) {
-  try {
-    const result = await client.query("SELECT name FROM members");
+export async function getAllMaleMembers(req, res) {
+  const userid = req.user.userid;
 
-    return res.status(200).json({ success: true, data: result.rows});
+  try {
+    const result = await client.query(
+      "SELECT name,age FROM members WHERE created_user = ($1) AND gender = true",
+      [userid]
+    );
+
+    return res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.log("Error in Fetching Members", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getAllFemaleMembers(req, res) {
+  const userid = req.user.userid;
+
+  try {
+    const result = await client.query(
+      "SELECT name,age FROM members WHERE created_user = ($1) AND gender = false",
+      [userid]
+    );
+
+    return res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.log("Error in Fetching Members", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getAllMembers(req, res) {
+  const userid = req.user.userid;
+
+  try {
+    const result = await client.query(
+      "SELECT name,age FROM members WHERE created_user = ($1)",
+      [userid]
+    );
+
+    return res.status(200).json({ success: true, data: result.rows });
   } catch (error) {
     console.log("Error in Fetching Members", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -106,14 +145,16 @@ export async function editMember(req, res) {
 
 export async function deleteMember(req, res) {
   const member_id = req.params.id;
+  const userid = req.user.userid;
 
   try {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });
     } else {
-      await client.query("DELETE FROM members WHERE member_id =($1)", [
-        member_id,
-      ]);
+      await client.query(
+        "DELETE FROM members WHERE member_id =($1) AND created_user = ($2)",
+        [member_id, userid]
+      );
 
       return res.status(200).json({ success: true });
     }
@@ -124,8 +165,10 @@ export async function deleteMember(req, res) {
 }
 
 export async function deleteAllMembers(req, res) {
+  const userid = req.user.userid;
+
   try {
-    await client.query("DELETE FROM members");
+    await client.query("DELETE FROM members WHERE created_user = ($1)",[userid]);
 
     return res.status(200).json({ success: true });
   } catch (error) {

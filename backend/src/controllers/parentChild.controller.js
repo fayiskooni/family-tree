@@ -58,7 +58,7 @@ export async function createParentChild(req, res) {
   }
 }
 
-export async function getParentChilds(req, res) {
+export async function getParentChild(req, res) {
   const member_id = req.params.id;
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",

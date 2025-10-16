@@ -1,15 +1,13 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
+import MemberCard from "../components/MemberCard";
+import NoMembersFound from "../components/NoMembersFound";
+import { getUserMembers } from "../lib/api";
 
-import { getUserFamilies } from "../lib/api";
-
-import NoFamiliesFound from "../components/NoFamiliesFound";
-import FamilyCard from "../components/FamilyCard";
-
-const HomePage = () => {
-  const { data: families = [], isLoading: loadingFamilies } = useQuery({
-    queryKey: ["families"],
-    queryFn: getUserFamilies,
+const MembersPage = () => {
+  const { data: members = [], isLoading: loadingMembers } = useQuery({
+    queryKey: ["members"],
+    queryFn: getUserMembers,
   });
 
   return (
@@ -17,20 +15,20 @@ const HomePage = () => {
       <div className="container mx-auto space-y-10">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-            Your Families
+            Your Family Members
           </h2>
         </div>
 
-        {loadingFamilies ? (
+        {loadingMembers ? (
           <div className="flex justify-center py-12">
             <span className="loading loading-spinner loading-lg" />
           </div>
-        ) : families.length === 0 ? (
-          <NoFamiliesFound />
+        ) : members.length === 0 ? (
+          <NoMembersFound />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {families.data.map((family, index) => (
-              <FamilyCard key={index} family={family.family_name} />
+            {members.data.map((member, index) => (
+              <MemberCard key={index} member={member} />
             ))}
           </div>
         )}
@@ -39,4 +37,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default MembersPage;
