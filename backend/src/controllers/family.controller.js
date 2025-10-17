@@ -1,14 +1,23 @@
 import { client } from "../lib/db.js";
 
 export async function createFamily(req, res) {
-  const family_name = req.body.family_name;
+  console.log(req.body.familyName);
+
+  const family_name = req.body.familyName;
+  const userid = req.user.userid;
+
+  const result = await client.query(
+    "SELECT EXISTS (SELECT 1 FROM families WHERE family_name = $1 AND created_user = $2)",
+    [family_name, userid]
+  );
+  console.log(result.rows[0].exists);
 
   try {
     if (!family_name) {
       return res.status(400).json({ message: "Family Name required" });
+    } else if (result.rows[0].exists) {
+      return res.status(400).json({ message: "Family Name Already Exist" });
     } else {
-      const userid = req.user.userid;
-
       await client.query(
         "INSERT INTO families (family_name , created_user) VALUES ($1,$2)",
         [family_name, userid]

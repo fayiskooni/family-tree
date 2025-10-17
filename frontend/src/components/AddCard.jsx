@@ -1,19 +1,18 @@
+import { CirclePlus } from "lucide-react";
 import React from "react";
 
-const MemberCard = ({ member }) => {
+const AddCard = () => {
   return (
     <div className="card bg-base-200 hover:shadow-md transition-shadow flex items-center justify-center text-center">
       <div className="card-body p-4 flex items-center justify-center">
-        {/* USER INFO */}
         <div className="flex items-center justify-center gap-2">
-          <h3 className="font-semibold truncate">{member.name}</h3>
-          <div className="w-6 h-6 border-2 rounded-full text-xs flex items-center justify-center">
-            {member.age}
-          </div>
+          <h3 className="font-semibold truncate">
+            <CirclePlus />
+          </h3>
         </div>
       </div>
     </div>
   );
 };
 
-export default MemberCard;
+export default AddCard;

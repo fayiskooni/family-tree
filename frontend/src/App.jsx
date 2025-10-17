@@ -11,6 +11,8 @@ import Layout from "./components/Layout.jsx";
 import PageLoader from "./components/PageLoader.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
 
+import { Toaster } from "sonner";
+
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
   const { theme } = useThemeStore();
@@ -28,6 +30,7 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <HomePage />
+                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />

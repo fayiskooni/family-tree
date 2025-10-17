@@ -1,14 +1,72 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+import { createAuthMember, getUserMembers } from "../lib/api";
+
 import MemberCard from "../components/MemberCard";
 import NoMembersFound from "../components/NoMembersFound";
-import { getUserMembers } from "../lib/api";
+import AddCard from "@/components/AddCard";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const MembersPage = () => {
+  const queryClient = useQueryClient();
+
   const { data: members = [], isLoading: loadingMembers } = useQuery({
     queryKey: ["members"],
     queryFn: getUserMembers,
   });
+
+  const [member, setMember] = useState({
+    name: "",
+    gender: "",
+    age: "",
+    date_of_birth: null,
+    date_of_death: null,
+    blood_group: null,
+  });
+  const [open, setOpen] = useState(false);
+
+  const handleClick = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await createAuthMember({ member });
+      if (response?.message) {
+        toast(response.message);
+      } else {
+        toast.success("Member added successfully!");
+      }
+      await queryClient.invalidateQueries({ queryKey: ["members"] });
+      setMember("");
+      setOpen(false);
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "Something went wrong!";
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -30,6 +88,107 @@ const MembersPage = () => {
             {members.data.map((member, index) => (
               <MemberCard key={index} member={member} />
             ))}
+            <Dialog open={open} onOpenChange={setOpen}>
+              <form>
+                <DialogTrigger>
+                  <AddCard />
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add Member Details</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4">
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberName">Name</Label>
+                      <Input
+                        name="memberName"
+                        value={member.name}
+                        onChange={(e) =>
+                          setMember({ ...member, name: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberGender">Gender</Label>
+                      <Select
+                        value={member.gender}
+                        onValueChange={(value) =>
+                          setMember({ ...member, gender: value })
+                        }
+                        required
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Select a Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Gender</SelectLabel>
+                            <SelectItem value="true">Male</SelectItem>
+                            <SelectItem value="false">Female</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberAge">Age</Label>
+                      <Input
+                        name="memberAge"
+                        value={member.age}
+                        onChange={(e) =>
+                          setMember({ ...member, age: e.target.value })
+                        }
+                        required
+                      />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberDateOfBirth">Date of Birth</Label>
+                      <Input
+                        name="memberDateOfBirth"
+                        value={member.date_of_birth}
+                        onChange={(e) =>
+                          setMember({
+                            ...member,
+                            date_of_birth: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberDateOfDeath">Date of Death</Label>
+                      <Input
+                        name="memberDateOfDeath"
+                        value={member.date_of_death}
+                        onChange={(e) =>
+                          setMember({
+                            ...member,
+                            date_of_death: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="memberBloodGroup">Blood Group</Label>
+                      <Input
+                        name="memberBloodGroup"
+                        value={member.blood_group}
+                        onChange={(e) =>
+                          setMember({ ...member, blood_group: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleClick} type="submit">
+                      Save
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </form>
+            </Dialog>
           </div>
         )}
       </div>

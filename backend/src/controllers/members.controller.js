@@ -1,8 +1,9 @@
 import { client } from "../lib/db.js";
 
 export async function createMember(req, res) {
+  
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
-    req.body;
+    req.body.member;
   const userid = req.user.userid;
 
   try {
@@ -168,7 +169,9 @@ export async function deleteAllMembers(req, res) {
   const userid = req.user.userid;
 
   try {
-    await client.query("DELETE FROM members WHERE created_user = ($1)",[userid]);
+    await client.query("DELETE FROM members WHERE created_user = ($1)", [
+      userid,
+    ]);
 
     return res.status(200).json({ success: true });
   } catch (error) {
