@@ -48,9 +48,17 @@ export async function getUserMembers() {
 }
 
 export const getAuthMember = async (memberData) => {
-  const response = await axiosInstance.post(
+  const response = await axiosInstance.get(
     `/member/${memberData.member_id}`,
     memberData
+  );
+  return response.data;
+};
+
+export const getAuthFamily = async (family) => {
+  const response = await axiosInstance.get(
+    `/family/${family.family_id}`,
+    family
   );
   return response.data;
 };

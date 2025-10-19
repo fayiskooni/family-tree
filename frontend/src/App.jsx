@@ -51,6 +51,7 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <MembersPage />
+                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />

@@ -87,26 +87,6 @@ const LoginPage = () => {
                   password must be at least 6 characters long
                 </p>
               </div>
-              {/* TERMS & CONDITIONS */}
-              <div className=" form-control">
-                <label className=" label cursor-pointer justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    className=" checkbox checkbox-sm"
-                    required
-                  />
-                  <span className=" text-xs text-gray-700">
-                    I agree to the{" "}
-                    <span className=" text-secondary hover:underline">
-                      terms of service
-                    </span>{" "}
-                    and{" "}
-                    <span className=" text-secondary hover:underline">
-                      privacy policy
-                    </span>
-                  </span>
-                </label>
-              </div>
 
               {/* Submit button */}
               <button

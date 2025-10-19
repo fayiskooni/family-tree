@@ -118,11 +118,11 @@ const SignUpPage = () => {
                   />
                   <span className=" text-xs text-gray-700">
                     I agree to the{" "}
-                    <span className=" text-secondary hover:underline">
+                    <span className=" text-purple-600 hover:underline">
                       terms of service
                     </span>{" "}
                     and{" "}
-                    <span className=" text-secondary hover:underline">
+                    <span className=" text-purple-600 hover:underline">
                       privacy policy
                     </span>
                   </span>
