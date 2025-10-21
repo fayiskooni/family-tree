@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-import { createAuthFamily, getUserFamilies } from "../lib/api";
-
+import {
+  createAuthFamily,
+  getUserFamilies,
+  updateFamily,
+  deleteFamily,
+} from "../lib/api";
 import FamilyCard from "../components/FamilyCard";
 import NoFamiliesFound from "../components/NoFamiliesFound";
 import AddCard from "@/components/AddCard";
-
 import {
   Dialog,
   DialogClose,
@@ -23,8 +25,7 @@ import { toast } from "sonner";
 
 const HomePage = () => {
   const queryClient = useQueryClient();
-
-  const { data: families = [], isLoading: loadingFamilies } = useQuery({
+  const { data: families = {}, isLoading: loadingFamilies } = useQuery({
     queryKey: ["families"],
     queryFn: getUserFamilies,
   });
@@ -32,24 +33,39 @@ const HomePage = () => {
   const [familyName, setFamilyName] = useState("");
   const [open, setOpen] = useState(false);
 
-  const handleClick = async (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-
     try {
       const response = await createAuthFamily({ familyName });
-      if (response?.message) {
-        toast(response.message);
-        console.log(response?.message);
-      } else {
-        toast.success("Family added successfully!");
-      }
+      if (response?.message) toast(response.message);
+      else toast.success("Family added successfully!");
       await queryClient.invalidateQueries({ queryKey: ["families"] });
       setFamilyName("");
       setOpen(false);
     } catch (error) {
-      const errorMessage =
-        error?.response?.data?.message|| "Something went wrong!";
-      toast.error(errorMessage);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
+    }
+  };
+
+  const handleEdit = async (id, newName) => {
+    console.log(id);
+    
+    try {
+      await updateFamily({ id, familyName: newName });
+      toast.success("Family updated!");
+      await queryClient.invalidateQueries({ queryKey: ["families"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update family");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteFamily({ id });
+      toast.success("Family deleted!");
+      await queryClient.invalidateQueries({ queryKey: ["families"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete family");
     }
   };
 
@@ -66,13 +82,21 @@ const HomePage = () => {
           <div className="flex justify-center py-12">
             <span className="loading loading-spinner loading-lg" />
           </div>
-        ) : families.length === 0 ? (
+        ) : (Array.isArray(families.data) && families.data.length === 0) ? (
           <NoFamiliesFound />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {families.data.map((family, index) => (
-              <FamilyCard key={index} family={family.family_name} />
-            ))}
+            {Array.isArray(families.data) &&
+              families.data.map((family, index) => (
+                <FamilyCard
+                  key={family.family_id ?? index}
+                  family={family} // pass full object (has id and family_name)
+                  onEdit={(newName) => handleEdit(family.family_id, newName)}
+                  onDelete={() => handleDelete(family.family_id)}
+                />
+              ))}
+
+            {/* Add new family dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
               <form>
                 <DialogTrigger>
@@ -87,7 +111,6 @@ const HomePage = () => {
                       <Label htmlFor="familyName">Name</Label>
                       <Input
                         id="familyName"
-                        name="familyName"
                         value={familyName}
                         onChange={(e) => setFamilyName(e.target.value)}
                         required
@@ -98,7 +121,7 @@ const HomePage = () => {
                     <DialogClose asChild>
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button onClick={handleClick} type="submit">
+                    <Button onClick={handleAdd} type="submit">
                       Save
                     </Button>
                   </DialogFooter>

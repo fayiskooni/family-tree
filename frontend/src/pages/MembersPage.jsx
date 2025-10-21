@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { createAuthMember, getUserMembers } from "../lib/api";
+import {
+  createAuthMember,
+  deleteMember,
+  getUserMembers,
+  updateMember,
+} from "../lib/api";
 
 import MemberCard from "../components/MemberCard";
 import NoMembersFound from "../components/NoMembersFound";
@@ -67,6 +72,27 @@ const MembersPage = () => {
       toast.error(errorMessage);
     }
   };
+  const handleEdit = async (id, member) => {
+    console.log(id);
+
+    try {
+      await updateMember({ id, member });
+      toast.success("Member updated!");
+      await queryClient.invalidateQueries({ queryKey: ["members"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update member");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteMember({ id });
+      toast.success("Member deleted!");
+      await queryClient.invalidateQueries({ queryKey: ["members"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to delete member");
+    }
+  };
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -86,7 +112,12 @@ const MembersPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {members.data.map((member, index) => (
-              <MemberCard key={index} member={member} />
+              <MemberCard
+                key={member.member_id ?? index}
+                member={member}
+                onEdit={(updated) => handleEdit(member.member_id, updated)}
+                onDelete={() => handleDelete(member.member_id)}
+              />
             ))}
             <Dialog open={open} onOpenChange={setOpen}>
               <form>

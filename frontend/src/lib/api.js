@@ -32,33 +32,60 @@ export const createAuthFamily = async (familyName) => {
   return response.data;
 };
 
-export async function getUserFamilies() {
-  const response = await axiosInstance.get("/families");
-  return response.data;
-}
-
 export const createAuthMember = async (member) => {
   const response = await axiosInstance.post("/member", member);
   return response.data;
 };
+
+export async function getUserFamilies() {
+  const response = await axiosInstance.get("/families");
+  return response.data;
+}
 
 export async function getUserMembers() {
   const response = await axiosInstance.get("/members");
   return response.data;
 }
 
-export const getAuthMember = async (memberData) => {
-  const response = await axiosInstance.get(
-    `/member/${memberData.member_id}`,
-    memberData
-  );
-  return response.data;
+export const updateFamily = async ({ id, familyName }) => {
+  try {
+    const response = await axiosInstance.patch(`/family/${id}`, {
+      // backend expects `family_name`
+      family_name: familyName,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating family:", error);
+    throw error;
+  }
 };
 
-export const getAuthFamily = async (family) => {
-  const response = await axiosInstance.get(
-    `/family/${family.family_id}`,
-    family
-  );
-  return response.data;
+export const updateMember = async ({ id, member }) => {
+  try {
+    const response = await axiosInstance.patch(`/member/${id}`, member);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating member:", error);
+    throw error;
+  }
+};
+
+export const deleteFamily = async ({ id }) => {
+  try {
+    const response = await axiosInstance.delete(`/family/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting family:", error);
+    throw error;
+  }
+};
+
+export const deleteMember = async ({ id }) => {
+  try {
+    const response = await axiosInstance.delete(`/member/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting member:", error);
+    throw error;
+  }
 };

@@ -88,7 +88,7 @@ export async function getAllMembers(req, res) {
 
   try {
     const result = await client.query(
-      "SELECT name,age FROM members WHERE created_user = ($1)",
+      "SELECT member_id,name,age FROM members WHERE created_user = ($1)",
       [userid]
     );
 
@@ -103,6 +103,9 @@ export async function editMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body;
   const member_id = req.params.id;
+  console.log("body",req.body);
+  console.log("params",req.params);
+  
   try {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });
