@@ -1,7 +1,6 @@
 import { client } from "../lib/db.js";
 
 export async function createMember(req, res) {
-  
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body.member;
   const userid = req.user.userid;
@@ -99,13 +98,43 @@ export async function getAllMembers(req, res) {
   }
 }
 
+export async function getRecommendedMembers(req, res) {
+  const userid = req.user.userid;
+  const family_id = req.params.id;
+
+  try {
+    const result = await client.query(
+      `
+      SELECT m.member_id, m.name, m.age
+      FROM members m
+      WHERE m.created_user = $1
+      AND m.member_id NOT IN (
+        SELECT fm.member_id
+        FROM family_members fm
+        WHERE fm.family_id = $2
+      )
+      ORDER BY m.name ASC
+      `,
+      [userid, family_id]
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching recommended members:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export async function editMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body;
   const member_id = req.params.id;
-  console.log("body",req.body);
-  console.log("params",req.params);
-  
+  console.log("body", req.body);
+  console.log("params", req.params);
+
   try {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });

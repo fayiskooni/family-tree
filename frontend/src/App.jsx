@@ -12,7 +12,7 @@ import PageLoader from "./components/PageLoader.jsx";
 import { useThemeStore } from "./store/useThemeStore.js";
 
 import { Toaster } from "sonner";
-
+import FamilyPage from "./pages/FamilyPage.jsx";
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
   const { theme } = useThemeStore();
@@ -51,6 +51,19 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <MembersPage />
+                <Toaster richColors position="top-center" />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/family/:id"
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <FamilyPage />
                 <Toaster richColors position="top-center" />
               </Layout>
             ) : (

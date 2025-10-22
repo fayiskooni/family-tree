@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -12,10 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { HousePlus, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 const FamilyCard = ({ family, onEdit, onDelete }) => {
-  // family is now the full object: { id, family_name, ... }
   const [open, setOpen] = useState(false);
   const [editName, setEditName] = useState(family?.family_name ?? "");
 
@@ -28,13 +26,11 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
       toast.error("Family name cannot be empty");
       return;
     }
-    // call parent with the new name only; parent uses the family's id it already has
     await onEdit(editName);
     setOpen(false);
   };
 
   const handleDelete = async () => {
-    // call parent without id; parent will delete using bound id
     await onDelete();
     setOpen(false);
   };
@@ -49,34 +45,67 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
       {/* Hover Edit Icon */}
       <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="icon" variant="ghost">
-              <Pencil className="h-4 w-4" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Edit Family</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4">
-              <div className="grid gap-3">
-                <Label htmlFor="editName">Name</Label>
-                <Input
-                  id="editName"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                />
+          {/* Replace DialogTrigger with a normal button that stops propagation */}
+          <Button
+            size="icon"
+            variant="ghost"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setOpen(true);
+            }}
+            aria-label="Edit family"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+
+          <DialogContent className="sm:max-w-[425px]" onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()}>
+              <DialogHeader>
+                <DialogTitle>Edit Family Name</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="editName">Name</Label>
+                  <Input
+                    id="editName"
+                    value={editName}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setEditName(e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
               </div>
+              <DialogFooter className="sm:justify-between gap-2">
+                <div className="flex gap-2 justify-start">
+                  <Button 
+                    variant="destructive" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete();
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Delete
+                  </Button>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <DialogClose asChild>
+                    <Button variant="outline" onClick={(e) => e.stopPropagation()}>
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button onClick={(e) => {
+                    e.stopPropagation();
+                    handleSave();
+                  }}>
+                    Save
+                  </Button>
+                </div>
+              </DialogFooter>
             </div>
-            <DialogFooter className="flex justify-between">
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <Button variant="destructive" onClick={handleDelete}>
-                <Trash2 className="w-4 h-4 mr-1" /> Delete
-              </Button>
-              <Button onClick={handleSave}>Save</Button>
-            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

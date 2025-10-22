@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Link } from "react-router";
 
 const HomePage = () => {
   const queryClient = useQueryClient();
@@ -49,7 +50,7 @@ const HomePage = () => {
 
   const handleEdit = async (id, newName) => {
     console.log(id);
-    
+
     try {
       await updateFamily({ id, familyName: newName });
       toast.success("Family updated!");
@@ -82,18 +83,23 @@ const HomePage = () => {
           <div className="flex justify-center py-12">
             <span className="loading loading-spinner loading-lg" />
           </div>
-        ) : (Array.isArray(families.data) && families.data.length === 0) ? (
+        ) : Array.isArray(families.data) && families.data.length === 0 ? (
           <NoFamiliesFound />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.isArray(families.data) &&
               families.data.map((family, index) => (
-                <FamilyCard
+                <Link
                   key={family.family_id ?? index}
-                  family={family} // pass full object (has id and family_name)
-                  onEdit={(newName) => handleEdit(family.family_id, newName)}
-                  onDelete={() => handleDelete(family.family_id)}
-                />
+                  to={`/family/${family.family_id}`}
+                >
+                  <FamilyCard
+                    key={family.family_id ?? index}
+                    family={family} // pass full object (has id and family_name)
+                    onEdit={(newName) => handleEdit(family.family_id, newName)}
+                    onDelete={() => handleDelete(family.family_id)}
+                  />
+                </Link>
               ))}
 
             {/* Add new family dialog */}

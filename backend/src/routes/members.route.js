@@ -9,6 +9,7 @@ import {
   getAllMaleMembers,
   getAllMembers,
   getMember,
+  getRecommendedMembers,
 } from "../controllers/members.controller.js";
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.use(protectRoute);
 
 router.post("/member", createMember);
 router.get("/member/:id", getMember);
+router.get("/recommended/members/:id", getRecommendedMembers);
 router.get("/members", getAllMembers);
 router.get("/male/members", getAllMaleMembers);
 router.get("/female/members", getAllFemaleMembers);

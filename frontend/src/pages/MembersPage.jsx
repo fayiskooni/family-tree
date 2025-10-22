@@ -112,12 +112,13 @@ const MembersPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {members.data.map((member, index) => (
-              <MemberCard
-                key={member.member_id ?? index}
-                member={member}
-                onEdit={(updated) => handleEdit(member.member_id, updated)}
-                onDelete={() => handleDelete(member.member_id)}
-              />
+            
+                <MemberCard
+                  key={member.member_id ?? index}
+                  member={member}
+                  onEdit={(updated) => handleEdit(member.member_id, updated)}
+                  onDelete={() => handleDelete(member.member_id)}
+                />
             ))}
             <Dialog open={open} onOpenChange={setOpen}>
               <form>

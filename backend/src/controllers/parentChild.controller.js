@@ -5,7 +5,7 @@ export async function createParentChild(req, res) {
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",
     [member_id]
-  );
+  );w
 
   if (genderResult.rows.length === 0) {
     return res.status(404).json({ error: "Member not found" });

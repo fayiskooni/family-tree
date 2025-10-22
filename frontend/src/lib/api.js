@@ -37,6 +37,24 @@ export const createAuthMember = async (member) => {
   return response.data;
 };
 
+export const createFamilyMember = async (familyId, memberData) => {
+  const response = await axiosInstance.post(
+    `/family/member/${familyId}`,
+    memberData
+  );
+  return response.data;
+};
+
+export async function getFamily(id) {
+  const response = await axiosInstance.get(`/family/${id}`);
+  return response.data;
+}
+
+export async function getMember(id) {
+  const response = await axiosInstance.get(`/member/${id}`);
+  return response.data;
+}
+
 export async function getUserFamilies() {
   const response = await axiosInstance.get("/families");
   return response.data;
@@ -44,6 +62,16 @@ export async function getUserFamilies() {
 
 export async function getUserMembers() {
   const response = await axiosInstance.get("/members");
+  return response.data;
+}
+
+export async function getRecommendedMembers(id) {
+  const response = await axiosInstance.get(`/recommended/members/${id}`);
+  return response.data;
+}
+
+export async function getFamilyMembers(id) {
+  const response = await axiosInstance.get(`/family/members/${id}`);
   return response.data;
 }
 
@@ -86,6 +114,18 @@ export const deleteMember = async ({ id }) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting member:", error);
+    throw error;
+  }
+};
+
+export const deleteFamilyMember = async (id, memberId) => {
+  try {
+    const response = await axiosInstance.delete(`/family/member/${id}`, {
+      data: { member_id: memberId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting family member:", error);
     throw error;
   }
 };
