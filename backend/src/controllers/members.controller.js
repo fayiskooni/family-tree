@@ -61,7 +61,7 @@ export async function getAllUnmarriedMales(req, res) {
 
     return res.status(200).json({ success: true, data: result.rows });
   } catch (error) {
-    console.log("Error in Fetching Members", error);
+    console.log("Error in Fetching UnmarriedMales", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -77,7 +77,23 @@ export async function getAllUnmarriedFemales(req, res) {
 
     return res.status(200).json({ success: true, data: result.rows });
   } catch (error) {
-    console.log("Error in Fetching Members", error);
+    console.log("Error in Fetching UnmarriedFemales", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getAllChildren(req, res) {
+  const userid = req.user.userid;
+
+  try {
+    const result = await client.query(
+      "SELECT m.member_id, m.name FROM members m LEFT JOIN parent_child pc ON m.member_id = pc.child_id WHERE pc.child_id IS NULL AND m.created_user = ($1);",
+      [userid]
+    );
+
+    return res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.log("Error in Fetching AllChildren", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
@@ -132,8 +148,6 @@ export async function editMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body;
   const member_id = req.params.id;
-  console.log("body", req.body);
-  console.log("params", req.params);
 
   try {
     if (!member_id) {

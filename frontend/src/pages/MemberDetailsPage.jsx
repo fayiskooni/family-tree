@@ -1,6 +1,7 @@
 import {
   createChild,
   createCouple,
+  getAllChildren,
   getAllUnmarriedFemales,
   getAllUnmarriedMales,
   getMember,
@@ -14,7 +15,6 @@ import { useParams } from "react-router";
 import { Label } from "@/components/ui/label";
 import PageLoader from "@/components/PageLoader";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Save } from "lucide-react";
 import {
@@ -56,8 +56,13 @@ const MemberDetailsPage = () => {
     queryFn: () => getAllUnmarriedFemales(),
   });
 
+  const { data: allChildren = [] } = useQuery({
+    queryKey: ["allChildren"],
+    queryFn: () => getAllChildren(),
+  });
+
   const [memberSpouse, setMemberSpouse] = useState("");
-  const [memberChild, setMemberChild] = useState([]);
+  const [memberChild, setMemberChild] = useState([""]); // Initialize with one empty string
 
   let gender;
   if (memberData?.data?.gender) {
@@ -67,9 +72,6 @@ const MemberDetailsPage = () => {
   }
 
   React.useEffect(() => {
-    if (children?.data?.length > 0) {
-      setMemberChild(children.data.map((c) => c.child_name || ""));
-    }
     if (spouse?.data && memberData?.data?.gender) {
       const gender = memberData.data.gender;
 
@@ -79,7 +81,7 @@ const MemberDetailsPage = () => {
         setMemberSpouse(spouse.data.husband_id);
       }
     }
-  }, [spouse, children, memberData]);
+  }, [spouse, memberData]);
 
   const addCoupleMutation = useMutation({
     mutationFn: (data) => createCouple(id, data),
@@ -117,7 +119,7 @@ const MemberDetailsPage = () => {
 
       toast.success("Changes saved successfully!");
     } catch (error) {
-      toast.error("Failed to save changes",error);
+      toast.error("Failed to save changes", error);
     }
   };
 
@@ -190,26 +192,53 @@ const MemberDetailsPage = () => {
 
         <div>
           <Label>Children</Label>
-          {memberChild.map((childName, index) => (
-            <Input
+          {children?.data?.length > 0 && (
+            <div className="space-y-2 mb-4">
+              {children.data.map((child) => (
+                <div
+                  key={child.child_id}
+                  className="text-sm p-2 border rounded bg-muted"
+                >
+                  {child.child_name}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {memberChild.map((childId, index) => (
+            <Select
               key={index}
-              value={childName}
-              onChange={(e) => {
+              value={childId}
+              onValueChange={(value) => {
                 const newChildren = [...memberChild];
-                newChildren[index] = e.target.value;
+                newChildren[index] = value;
                 setMemberChild(newChildren);
               }}
-              placeholder={`Child ${index + 1}`}
-              className="mb-2"
-            />
+            >
+              <SelectTrigger className="w-[180px] mb-2">
+                <SelectValue placeholder={`Select Child ${index + 1}`} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Available Children</SelectLabel>
+                  {allChildren.data?.map((child) => (
+                    <SelectItem key={child.member_id} value={child.member_id}>
+                      {child.name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           ))}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setMemberChild([...memberChild, ""])}
-          >
-            <Plus className="h-4 w-4 mr-1" /> Add Another Child
-          </Button>
+          {memberChild[memberChild.length - 1] !== "" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setMemberChild([...memberChild, ""])}
+            >
+              <Plus className="h-4 w-4 mr-1" /> Add Another Child
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex justify-center pt-6">

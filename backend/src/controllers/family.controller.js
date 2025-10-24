@@ -1,7 +1,6 @@
 import { client } from "../lib/db.js";
 
 export async function createFamily(req, res) {
-  console.log(req.body.familyName);
 
   const family_name = req.body.familyName;
   const userid = req.user.userid;
@@ -10,7 +9,6 @@ export async function createFamily(req, res) {
     "SELECT EXISTS (SELECT 1 FROM families WHERE family_name = $1 AND created_user = $2)",
     [family_name, userid]
   );
-  console.log(result.rows[0].exists);
 
   try {
     if (!family_name) {

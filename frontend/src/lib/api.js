@@ -18,7 +18,6 @@ export const logout = async () => {
 export const getAuthUser = async () => {
   try {
     const res = await axiosInstance.get("/me");
-    console.log(res);
 
     return res.data;
   } catch (error) {
@@ -45,12 +44,12 @@ export const createFamilyMember = async (familyId, memberData) => {
   return response.data;
 };
 
-export const createCouple = async (id,data) => {
+export const createCouple = async (id, data) => {
   const response = await axiosInstance.post(`/couple/${id}`, data);
   return response.data;
 };
 
-export const createChild = async (id,data) => {
+export const createChild = async (id, data) => {
   const response = await axiosInstance.post(`/parent/child/${id}`, data);
   return response.data;
 };
@@ -102,6 +101,11 @@ export async function getAllUnmarriedMales() {
 
 export async function getAllUnmarriedFemales() {
   const response = await axiosInstance.get("/female/members");
+  return response.data;
+}
+
+export async function getAllChildren() {
+  const response = await axiosInstance.get("/members/as/children");
   return response.data;
 }
 

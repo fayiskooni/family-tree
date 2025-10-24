@@ -49,7 +49,6 @@ const HomePage = () => {
   };
 
   const handleEdit = async (id, newName) => {
-    console.log(id);
 
     try {
       await updateFamily({ id, familyName: newName });

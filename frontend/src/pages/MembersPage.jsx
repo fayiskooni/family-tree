@@ -73,7 +73,6 @@ const MembersPage = () => {
     }
   };
   const handleEdit = async (id, member) => {
-    console.log(id);
 
     try {
       await updateMember({ id, member });

@@ -15,8 +15,6 @@ export async function createCouple(req, res) {
 
   const bodyMemberId = req.body.partnerId;
 
-  console.log("partner id", bodyMemberId);
-
   const bodyGenderResult = await client.query(
     "SELECT gender FROM members WHERE member_id = $1",
     [bodyMemberId]
