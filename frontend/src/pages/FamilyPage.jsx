@@ -23,7 +23,7 @@ import {
 } from "@/lib/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { toast } from "sonner";
 import { Pencil, UserMinus } from "lucide-react";
 
@@ -37,7 +37,7 @@ const FamilyPage = () => {
     queryKey: ["family", id],
     queryFn: () => getFamily(id),
   });
-
+  
   const { data: members = [], isLoading: loadingMembers } = useQuery({
     queryKey: ["members", id],
     queryFn: () => getFamilyMembers(id),
@@ -225,12 +225,17 @@ const FamilyPage = () => {
         ) : (
           //  Show member cards + AddDialog
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {members.data.map((member) => (
-              <MemberCard
-                key={member.member_id}
-                member={member}
-                hideOptions={true}
-              />
+            {members.data.map((member, index) => (
+              <Link
+                key={member.member_id ?? index}
+                to={`/member/${member.member_id}`}
+              >
+                <MemberCard
+                  key={member.member_id}
+                  member={member}
+                  hideOptions={true}
+                />
+              </Link>
             ))}
             {AddDialog}
           </div>

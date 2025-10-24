@@ -8,7 +8,7 @@ const router = express.Router();
 router.use(protectRoute);
 
 router.post("/parent/child/:id", createParentChild);
-router.get("/parent/children/:id", getParentChild);
+router.get("/parent/child/:id", getParentChild);
 router.delete("/parent/child/:id", deleteParentChild);
 
 

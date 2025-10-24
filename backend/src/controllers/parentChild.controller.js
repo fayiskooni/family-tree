@@ -2,17 +2,27 @@ import { client } from "../lib/db.js";
 
 export async function createParentChild(req, res) {
   const member_id = req.params.id;
+  const child_id = req.body.child_id;
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",
     [member_id]
-  );w
+  );
+  w;
 
   if (genderResult.rows.length === 0) {
     return res.status(404).json({ error: "Member not found" });
   }
 
+  const childExist = await client.query(
+    "SELECT * FROM parent_child WHERE child_id = ($1)",
+    [child_id]
+  );
+
+  if (childExist.rows.length > 0) {
+    return res.status(404).json({ error: "Child have parents Already" });
+  }
+
   const memberGender = genderResult.rows[0].gender;
-  const child_id = req.body.child_id;
   let marriageCheck, couple_id;
 
   if (memberGender === true) {
@@ -60,6 +70,8 @@ export async function createParentChild(req, res) {
 
 export async function getParentChild(req, res) {
   const member_id = req.params.id;
+  console.log("getParentChild", member_id);
+
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",
     [member_id]
@@ -70,6 +82,9 @@ export async function getParentChild(req, res) {
   }
 
   const memberGender = genderResult.rows[0].gender;
+
+  console.log("memberGender", memberGender);
+
   let marriageCheck;
 
   if (memberGender === true) {
@@ -80,11 +95,18 @@ export async function getParentChild(req, res) {
   try {
     const marriageResult = await client.query(marriageCheck, [member_id]);
 
+    console.log("marriageResult", marriageResult.rows[0].couple_id);
+
     if (marriageResult.rows[0].couple_id === null) {
-      return res.status(404).json({ error: "Couples not found" });
+      console.log("true , not married");
+      return res.status(404).json({ error: "Not Married" });
+    } else {
+      console.log("false , married");
     }
 
     const couple_id = marriageResult.rows[0].couple_id;
+    console.log("couple id",couple_id);
+    
 
     const result = await client.query(
       "SELECT m.name AS child_name FROM parent_child c JOIN  members m ON c.child_id = m.member_id WHERE c.couple_id = ($1)",

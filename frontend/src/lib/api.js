@@ -45,6 +45,16 @@ export const createFamilyMember = async (familyId, memberData) => {
   return response.data;
 };
 
+export const createCouple = async (id,data) => {
+  const response = await axiosInstance.post(`/couple/${id}`, data);
+  return response.data;
+};
+
+export const createChild = async (id,data) => {
+  const response = await axiosInstance.post(`/parent/child/${id}`, data);
+  return response.data;
+};
+
 export async function getFamily(id) {
   const response = await axiosInstance.get(`/family/${id}`);
   return response.data;
@@ -52,6 +62,16 @@ export async function getFamily(id) {
 
 export async function getMember(id) {
   const response = await axiosInstance.get(`/member/${id}`);
+  return response.data;
+}
+
+export async function getMemberSpouse(id) {
+  const response = await axiosInstance.get(`/couple/${id}`);
+  return response.data;
+}
+
+export async function getMemberChild(id) {
+  const response = await axiosInstance.get(`/parent/child/${id}`);
   return response.data;
 }
 
@@ -72,6 +92,16 @@ export async function getRecommendedMembers(id) {
 
 export async function getFamilyMembers(id) {
   const response = await axiosInstance.get(`/family/members/${id}`);
+  return response.data;
+}
+
+export async function getAllUnmarriedMales() {
+  const response = await axiosInstance.get("/male/members");
+  return response.data;
+}
+
+export async function getAllUnmarriedFemales() {
+  const response = await axiosInstance.get("/female/members");
   return response.data;
 }
 

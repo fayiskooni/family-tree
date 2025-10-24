@@ -5,9 +5,9 @@ import {
   deleteAllMembers,
   deleteMember,
   editMember,
-  getAllFemaleMembers,
-  getAllMaleMembers,
   getAllMembers,
+  getAllUnmarriedFemales,
+  getAllUnmarriedMales,
   getMember,
   getRecommendedMembers,
 } from "../controllers/members.controller.js";
@@ -21,8 +21,8 @@ router.post("/member", createMember);
 router.get("/member/:id", getMember);
 router.get("/recommended/members/:id", getRecommendedMembers);
 router.get("/members", getAllMembers);
-router.get("/male/members", getAllMaleMembers);
-router.get("/female/members", getAllFemaleMembers);
+router.get("/male/members", getAllUnmarriedMales);
+router.get("/female/members", getAllUnmarriedFemales);
 router.patch("/member/:id", editMember);
 router.delete("/member/:id", deleteMember);
 router.delete("/members", deleteAllMembers);

@@ -13,7 +13,10 @@ export async function createCouple(req, res) {
 
   const memberGender = genderResult.rows[0].gender;
 
-  const bodyMemberId = req.body.member_id;
+  const bodyMemberId = req.body.partnerId;
+
+  console.log("partner id", bodyMemberId);
+
   const bodyGenderResult = await client.query(
     "SELECT gender FROM members WHERE member_id = $1",
     [bodyMemberId]
@@ -80,6 +83,7 @@ export async function createCouple(req, res) {
 
 export async function getCouple(req, res) {
   const member_id = req.params.id;
+
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",
     [member_id]
@@ -94,21 +98,33 @@ export async function getCouple(req, res) {
   let marriageCheck;
 
   if (memberGender === true) {
-    marriageCheck = "SELECT * FROM couples WHERE husband_id = $1;";
+    marriageCheck = `
+    SELECT m.name 
+    FROM couples c
+    JOIN members m ON m.member_id = c.wife_id
+    WHERE c.husband_id = $1;
+  `;
   } else {
-    marriageCheck = "SELECT * FROM couples WHERE wife_id = $1;";
+    marriageCheck = `
+    SELECT m.name 
+    FROM couples c
+    JOIN members m ON m.member_id = c.husband_id
+    WHERE c.wife_id = $1;
+  `;
   }
-  try {
 
+  try {
     const marriageResult = await client.query(marriageCheck, [member_id]);
 
     if (marriageResult.rows.length > 0) {
-      return res.status(201).json({ success: true, data: marriageResult.rows[0] });
+      return res
+        .status(201)
+        .json({ success: true, data: marriageResult.rows[0] });
     } else {
-      return res.status(404).json({ error: "Member not Married" });
+      // return res.status(404).json({ error: "Member not Married" });
     }
   } catch (error) {
-    console.log("Error in Finding Couple", error);
+    console.log("Error in Finding Couple Name", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }

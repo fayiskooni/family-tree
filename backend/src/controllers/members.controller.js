@@ -50,12 +50,12 @@ export async function getMember(req, res) {
   }
 }
 
-export async function getAllMaleMembers(req, res) {
+export async function getAllUnmarriedMales(req, res) {
   const userid = req.user.userid;
 
   try {
     const result = await client.query(
-      "SELECT name,age FROM members WHERE created_user = ($1) AND gender = true",
+      "SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ($1) AND m.gender = true AND m.member_id NOT IN ( SELECT c.husband_id FROM couples c);",
       [userid]
     );
 
@@ -66,12 +66,12 @@ export async function getAllMaleMembers(req, res) {
   }
 }
 
-export async function getAllFemaleMembers(req, res) {
+export async function getAllUnmarriedFemales(req, res) {
   const userid = req.user.userid;
 
   try {
     const result = await client.query(
-      "SELECT name,age FROM members WHERE created_user = ($1) AND gender = false",
+      "SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ($1) AND m.gender = false AND m.member_id NOT IN ( SELECT c.wife_id FROM couples c);",
       [userid]
     );
 

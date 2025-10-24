@@ -13,6 +13,7 @@ import { useThemeStore } from "./store/useThemeStore.js";
 
 import { Toaster } from "sonner";
 import FamilyPage from "./pages/FamilyPage.jsx";
+import MemberDetailsPage from "./pages/MemberDetailsPage.jsx";
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
   const { theme } = useThemeStore();
@@ -64,6 +65,19 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <FamilyPage />
+                <Toaster richColors position="top-center" />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/member/:id"
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <MemberDetailsPage />
                 <Toaster richColors position="top-center" />
               </Layout>
             ) : (
