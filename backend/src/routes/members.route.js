@@ -5,8 +5,8 @@ import {
   deleteAllMembers,
   deleteMember,
   editMember,
-  getAllChildren,
   getAllMembers,
+  getAllRemainingChildren,
   getAllUnmarriedFemales,
   getAllUnmarriedMales,
   getMember,
@@ -24,7 +24,7 @@ router.get("/recommended/members/:id", getRecommendedMembers);
 router.get("/members", getAllMembers);
 router.get("/male/members", getAllUnmarriedMales);
 router.get("/female/members", getAllUnmarriedFemales);
-router.get("/members/as/children", getAllChildren);
+router.get("/members/as/children", getAllRemainingChildren);
 router.patch("/member/:id", editMember);
 router.delete("/member/:id", deleteMember);
 router.delete("/members", deleteAllMembers);

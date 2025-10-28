@@ -82,7 +82,7 @@ export async function getAllUnmarriedFemales(req, res) {
   }
 }
 
-export async function getAllChildren(req, res) {
+export async function getAllRemainingChildren(req, res) {
   const userid = req.user.userid;
 
   try {

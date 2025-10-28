@@ -94,6 +94,16 @@ export async function getFamilyMembers(id) {
   return response.data;
 }
 
+export async function getAllCouples(id) {
+  const response = await axiosInstance.get(`/couples/${id}`);
+  return response.data;
+}
+
+export async function getAllChildren(id) {
+  const response = await axiosInstance.get(`/parent/children/${id}`);
+  return response.data;
+}
+
 export async function getAllUnmarriedMales() {
   const response = await axiosInstance.get("/male/members");
   return response.data;
@@ -104,7 +114,7 @@ export async function getAllUnmarriedFemales() {
   return response.data;
 }
 
-export async function getAllChildren() {
+export async function getAllRemainingChildren() {
   const response = await axiosInstance.get("/members/as/children");
   return response.data;
 }

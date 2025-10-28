@@ -127,6 +127,21 @@ export async function getCouple(req, res) {
   }
 }
 
+export async function getAllCouples(req, res) {
+  const family_id = req.params.id;
+  try {
+    const result = await client.query(
+      "SELECT DISTINCT c.* FROM couples c JOIN members m ON (c.husband_id = m.member_id OR c.wife_id = m.member_id) JOIN family_members f ON m.member_id = f.member_id WHERE f.family_id = ($1)",
+      [family_id]
+    );
+
+    return res.status(200).json({ success: true, data: result.rows });
+  } catch (error) {
+    console.log("Error in Fetching all couples", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 export async function deleteCouple(req, res) {
   const member_id = req.params.id;
   const genderResult = await client.query(

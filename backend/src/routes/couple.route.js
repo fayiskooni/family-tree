@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js";
-import { createCouple, deleteCouple, getCouple } from "../controllers/couple.controller.js";
+import { createCouple, deleteCouple, getAllCouples, getCouple } from "../controllers/couple.controller.js";
 
 const router = express.Router();
 
@@ -9,6 +9,7 @@ router.use(protectRoute);
 
 router.post("/couple/:id", createCouple);
 router.get("/couple/:id", getCouple);
+router.get("/couples/:id", getAllCouples);
 router.delete("/couple/:id", deleteCouple);
 
 export default router;

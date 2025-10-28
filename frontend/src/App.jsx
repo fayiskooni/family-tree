@@ -14,6 +14,10 @@ import { useThemeStore } from "./store/useThemeStore.js";
 import { Toaster } from "sonner";
 import FamilyPage from "./pages/FamilyPage.jsx";
 import MemberDetailsPage from "./pages/MemberDetailsPage.jsx";
+import Tree from "./pages/test.jsx";
+import { ReactFlowProvider } from "@xyflow/react";
+import FamilyTreePage from "./pages/FamilyTreePage.jsx";
+
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
   const { theme } = useThemeStore();
@@ -66,6 +70,22 @@ const App = () => {
               <Layout showSidebar={true}>
                 <FamilyPage />
                 <Toaster richColors position="top-center" />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+        <Route
+          path="/treeView/family/:id"
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <ReactFlowProvider>
+                  <div style={{ width: "100%", height: "700px" }}>
+                    <FamilyTreePage />
+                  </div>
+                </ReactFlowProvider>
               </Layout>
             ) : (
               <Navigate to="/login" />

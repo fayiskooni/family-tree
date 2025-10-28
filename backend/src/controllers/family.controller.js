@@ -38,7 +38,7 @@ export async function getFamily(req, res) {
       return res.status(400).json({ message: "Family not found" });
     } else {
       const result = await client.query(
-        "SELECT family_name FROM families WHERE family_id =($1) AND created_user = ($2)",
+        "SELECT family_id,family_name FROM families WHERE family_id =($1) AND created_user = ($2)",
         [family_id, userid]
       );
 

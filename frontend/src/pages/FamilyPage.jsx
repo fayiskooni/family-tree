@@ -37,7 +37,7 @@ const FamilyPage = () => {
     queryKey: ["family", id],
     queryFn: () => getFamily(id),
   });
-  
+
   const { data: members = [], isLoading: loadingMembers } = useQuery({
     queryKey: ["members", id],
     queryFn: () => getFamilyMembers(id),
@@ -208,6 +208,10 @@ const FamilyPage = () => {
               {family?.data?.family_name}
             </h2>
             {EditMembersDialog}
+            <Link 
+            to={`/treeView/family/${family.data.family_id}`}>
+              <button className="btn">View Family Tree</button>
+            </Link>
           </div>
         </div>
 

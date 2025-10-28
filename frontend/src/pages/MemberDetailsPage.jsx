@@ -1,7 +1,7 @@
 import {
   createChild,
   createCouple,
-  getAllChildren,
+  getAllRemainingChildren,
   getAllUnmarriedFemales,
   getAllUnmarriedMales,
   getMember,
@@ -58,7 +58,7 @@ const MemberDetailsPage = () => {
 
   const { data: allChildren = [] } = useQuery({
     queryKey: ["allChildren"],
-    queryFn: () => getAllChildren(),
+    queryFn: () => getAllRemainingChildren(),
   });
 
   const [memberSpouse, setMemberSpouse] = useState("");
