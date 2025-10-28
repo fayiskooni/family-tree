@@ -2,12 +2,12 @@ import { client } from "../lib/db.js";
 
 export async function createParentChild(req, res) {
   const member_id = req.params.id;
-  const child_id = req.body.child_id;
+  const child_id = req.body.children[0];
+  
   const genderResult = await client.query(
     "SELECT gender FROM members Where member_id = ($1)",
     [member_id]
   );
-  w;
 
   if (genderResult.rows.length === 0) {
     return res.status(404).json({ error: "Member not found" });
