@@ -49,7 +49,6 @@ const HomePage = () => {
   };
 
   const handleEdit = async (id, newName) => {
-
     try {
       await updateFamily({ id, familyName: newName });
       toast.success("Family updated!");
@@ -83,7 +82,41 @@ const HomePage = () => {
             <span className="loading loading-spinner loading-lg" />
           </div>
         ) : Array.isArray(families.data) && families.data.length === 0 ? (
-          <NoFamiliesFound />
+          <div>
+            <NoFamiliesFound />
+            {/* Add new family dialog */}
+            <Dialog open={open} onOpenChange={setOpen}>
+              <form>
+                <DialogTrigger>
+                  <AddCard />
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add Family Name</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4">
+                    <div className="grid gap-3">
+                      <Label htmlFor="familyName">Name</Label>
+                      <Input
+                        id="familyName"
+                        value={familyName}
+                        onChange={(e) => setFamilyName(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleAdd} type="submit">
+                      Save
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </form>
+            </Dialog>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {Array.isArray(families.data) &&
