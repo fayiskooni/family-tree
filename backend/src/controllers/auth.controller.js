@@ -1,6 +1,6 @@
-import { client } from "../lib/db.js"; // Import the client
-import bcrypt from "bcrypt"; // Add this import
-import jwt from "jsonwebtoken"; // Add this import
+import { client } from "../lib/db.js"; 
+import bcrypt from "bcrypt"; 
+import jwt from "jsonwebtoken"; 
 
 import "dotenv/config";
 
@@ -36,14 +36,28 @@ export async function signup(req, res) {
         .status(400)
         .json({ message: "Email already exists, please use a different one" });
     } else {
-      // Hash the password using await
+      // Hash the password
       const hash = await bcrypt.hash(password, Number(saltRounds));
       const result = await client.query(
         "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *",
         [email, hash, username]
       );
       const user = result.rows[0];
-      return res.status(201).json({ success: true, user });
+      // Auto-login after signup
+      const token = jwt.sign(
+        { id: user.id, email: user.email, username: user.username },
+        jwtSecret,
+        { expiresIn: "24h" }
+      );
+
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+
+      return res.status(201).json({ success: true, token, user });
     }
   } catch (error) {
     console.log("Error in signup controller", error);
@@ -73,7 +87,7 @@ export async function login(req, res) {
     const token = jwt.sign(
       { id: user.id, email: user.email, username: user.username },
       jwtSecret,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
 
     // Set token as httpOnly cookie
@@ -81,7 +95,7 @@ export async function login(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 24 * 60 * 60 * 1000, 
     });
 
     return res.status(200).json({ success: true, token, user });

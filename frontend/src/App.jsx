@@ -14,7 +14,6 @@ import { useThemeStore } from "./store/useThemeStore.js";
 import { Toaster } from "sonner";
 import FamilyPage from "./pages/FamilyPage.jsx";
 import MemberDetailsPage from "./pages/MemberDetailsPage.jsx";
-import Tree from "./pages/test.jsx";
 import { ReactFlowProvider } from "@xyflow/react";
 import FamilyTreePage from "./pages/FamilyTreePage.jsx";
 
