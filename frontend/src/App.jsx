@@ -16,6 +16,7 @@ import FamilyPage from "./pages/FamilyPage.jsx";
 import MemberDetailsPage from "./pages/MemberDetailsPage.jsx";
 import { ReactFlowProvider } from "@xyflow/react";
 import FamilyTreePage from "./pages/FamilyTreePage.jsx";
+import HowToUse from "./pages/HowToUse.jsx";
 
 const App = () => {
   const { isLoading, authUser } = useAuthUser();
@@ -98,6 +99,18 @@ const App = () => {
               <Layout showSidebar={true}>
                 <MemberDetailsPage />
                 <Toaster richColors position="top-center" />
+              </Layout>
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
+        />
+         <Route
+          path="/userGuide"
+          element={
+            authUser ? (
+              <Layout showSidebar={true}>
+                <HowToUse />
               </Layout>
             ) : (
               <Navigate to="/login" />
