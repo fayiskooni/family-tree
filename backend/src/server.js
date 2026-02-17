@@ -38,6 +38,15 @@ app.use("/api/auth", membersRoutes);
 app.use("/api/auth", coupleRoutes);
 app.use("/api/auth", parentChildRoutes);
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", env: process.env.NODE_ENV });
+});
+
+app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+  res.status(500).json({ message: "Internal Server Error", error: err.message });
+});
+
 // Database connection
 connectDB().catch(err => console.error("Initial DB connection failed:", err));
 
