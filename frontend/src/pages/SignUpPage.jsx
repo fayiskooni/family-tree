@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useSignUp from "../hooks/useSignUp";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { TreeDeciduous, ArrowRight, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { TreeDeciduous, ArrowRight, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ const SignUpPage = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const { isPending, error, signUpMutation } = useSignUp();
 
@@ -128,13 +129,20 @@ const SignUpPage = () => {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    className="h-12 pl-11 pr-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/20 hover:text-base-content/40 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                  </button>
                 </div>
                 <p className="text-[9px] font-bold text-base-content/30 ml-1 italic italic">Minimum 6 alphanumeric characters required</p>
               </div>
