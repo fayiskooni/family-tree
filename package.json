@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend && ls -a && ls frontend && ls backend",
-    "start": "npm run start --prefix backend "
+    "build": "cd frontend && npm install && npm run build",
+    "start": "node backend/src/server.js"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,14 @@
     "url": "https://github.com/fayiskooni/family-tree/issues"
   },
   "homepage": "https://github.com/fayiskooni/family-tree#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.16.3"
+  }
 }

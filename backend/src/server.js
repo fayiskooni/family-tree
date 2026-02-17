@@ -16,7 +16,10 @@ import connectDB from "./lib/db.js";
 const app = express();
 const PORT = process.env.PORT;
 
-const __dirname = path.resolve();
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -35,15 +38,22 @@ app.use("/api/auth", membersRoutes);
 app.use("/api/auth", coupleRoutes);
 app.use("/api/auth", parentChildRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
+  app.use(express.static(path.join(__dirname, "../../frontend/dist")));
   app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"))
+    res.sendFile(path.join(__dirname, "../../frontend/dist/index.html"))
   })
 }
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-});
+const startServer = async () => {
+  await connectDB();
+  if (process.env.NODE_ENV !== "production" || process.env.VERCEL !== "1") {
+    app.listen(PORT || 5001, () => {
+      console.log(`Server running on port ${PORT || 5001}`);
+    });
+  }
+};
+
+startServer();
+
+export default app;

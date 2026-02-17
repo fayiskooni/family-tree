@@ -1,5 +1,5 @@
 import { client } from "../lib/db.js"; 
-import bcrypt from "bcrypt"; 
+import bcrypt from "bcryptjs"; 
 import jwt from "jsonwebtoken"; 
 
 import "dotenv/config";
