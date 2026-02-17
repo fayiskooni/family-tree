@@ -17,16 +17,12 @@ export const protectRoute = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized - Invalid token" });
     }
     const email = decoded.email;
-    const user = await client.query(
-      "SELECT * FROM users WHERE email = ($1)",
-      [email]
-    );
-
-    if (!user.rows.length) {
+    const userResult = await client`SELECT * FROM users WHERE email = ${email}`;
+    if (!userResult.length) {
       return res.status(401).json({ message: "Unauthorized - User not found" });
     }
 
-    req.user = user.rows[0];
+    req.user = userResult[0];
 
     next();
   } catch (error) {

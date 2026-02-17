@@ -26,10 +26,7 @@ export async function createMember(req, res) {
       const formatted_dod = isValidDate(date_of_death) ? date_of_death : null;
       const parsed_age = parseInt(age);
 
-      await client.query(
-        "INSERT INTO members (name, gender, age, date_of_birth, date_of_death, blood_group, created_user) VALUES ($1,$2,$3,$4,$5,$6,$7)",
-        [name, gender, parsed_age, formatted_dob, formatted_dod, blood_group || null, userid]
-      );
+      await client`INSERT INTO members (name, gender, age, date_of_birth, date_of_death, blood_group, created_user) VALUES (${name}, ${gender}, ${parsed_age}, ${formatted_dob}, ${formatted_dod}, ${blood_group || null}, ${userid})`;
 
       return res.status(201).json({ success: true });
     }
@@ -47,12 +44,9 @@ export async function getMember(req, res) {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });
     } else {
-      const result = await client.query(
-        "SELECT * FROM members WHERE member_id =($1) AND created_user = ($2)",
-        [member_id, userid]
-      );
+      const result = await client`SELECT * FROM members WHERE member_id = ${member_id} AND created_user = ${userid}`;
 
-      return res.status(200).json({ success: true, data: result.rows[0] });
+      return res.status(200).json({ success: true, data: result[0] });
     }
   } catch (error) {
     console.log("Error in Finding Member", error);
@@ -64,12 +58,9 @@ export async function getAllUnmarriedMales(req, res) {
   const userid = req.user.userid;
 
   try {
-    const result = await client.query(
-      "SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ($1) AND m.gender = true AND m.member_id NOT IN ( SELECT c.husband_id FROM couples c);",
-      [userid]
-    );
+    const result = await client`SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ${userid} AND m.gender = true AND m.member_id NOT IN ( SELECT c.husband_id FROM couples c);`;
 
-    return res.status(200).json({ success: true, data: result.rows });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Fetching UnmarriedMales", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -80,12 +71,9 @@ export async function getAllUnmarriedFemales(req, res) {
   const userid = req.user.userid;
 
   try {
-    const result = await client.query(
-      "SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ($1) AND m.gender = false AND m.member_id NOT IN ( SELECT c.wife_id FROM couples c);",
-      [userid]
-    );
+    const result = await client`SELECT m.member_id, m.name, m.age FROM members m WHERE m.created_user = ${userid} AND m.gender = false AND m.member_id NOT IN ( SELECT c.wife_id FROM couples c);`;
 
-    return res.status(200).json({ success: true, data: result.rows });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Fetching UnmarriedFemales", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -96,12 +84,9 @@ export async function getAllRemainingChildren(req, res) {
   const userid = req.user.userid;
 
   try {
-    const result = await client.query(
-      "SELECT m.member_id, m.name FROM members m LEFT JOIN parent_child pc ON m.member_id = pc.child_id WHERE pc.child_id IS NULL AND m.created_user = ($1);",
-      [userid]
-    );
+    const result = await client`SELECT m.member_id, m.name FROM members m LEFT JOIN parent_child pc ON m.member_id = pc.child_id WHERE pc.child_id IS NULL AND m.created_user = ${userid};`;
 
-    return res.status(200).json({ success: true, data: result.rows });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Fetching AllChildren", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -112,12 +97,9 @@ export async function getAllMembers(req, res) {
   const userid = req.user.userid;
 
   try {
-    const result = await client.query(
-      "SELECT member_id,name,age FROM members WHERE created_user = ($1)",
-      [userid]
-    );
+    const result = await client`SELECT member_id,name,age FROM members WHERE created_user = ${userid}`;
 
-    return res.status(200).json({ success: true, data: result.rows });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Fetching Members", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -129,24 +111,21 @@ export async function getRecommendedMembers(req, res) {
   const family_id = req.params.id;
 
   try {
-    const result = await client.query(
-      `
+    const result = await client`
       SELECT m.member_id, m.name, m.age
       FROM members m
-      WHERE m.created_user = $1
+      WHERE m.created_user = ${userid}
       AND m.member_id NOT IN (
         SELECT fm.member_id
         FROM family_members fm
-        WHERE fm.family_id = $2
+        WHERE fm.family_id = ${family_id}
       )
       ORDER BY m.name ASC
-      `,
-      [userid, family_id]
-    );
+      `;
 
     return res.status(200).json({
       success: true,
-      data: result.rows,
+      data: result,
     });
   } catch (error) {
     console.error("Error fetching recommended members:", error);
@@ -172,25 +151,14 @@ export async function editMember(req, res) {
         "blood_group",
       ];
 
-      const updates = []; // Holds SQL fragments like "name = $1"
-      const values = []; // Holds the actual values to update
-
-      let idx = 1; // Parameter index for SQL placeholders
-
-      for (const field of allowedFields) {
-        if (req.body[field] !== undefined) {
-          updates.push(`${field} = $${idx}`); // e.g., "name = $1"
-          values.push(req.body[field]); // e.g., "John"
-          idx++;
-        }
-      }
-
-      values.push(member_id);
-
-      const sql = `UPDATE members SET ${updates.join(
-        ", "
-      )} WHERE member_id = $${idx}`;
-      await client.query(sql, values);
+      await client`UPDATE members SET 
+        name = COALESCE(${name}, name),
+        gender = COALESCE(${gender}, gender),
+        age = COALESCE(${age}, age),
+        date_of_birth = COALESCE(${date_of_birth}, date_of_birth),
+        date_of_death = COALESCE(${date_of_death}, date_of_death),
+        blood_group = COALESCE(${blood_group}, blood_group)
+      WHERE member_id = ${member_id}`;
 
       return res.status(200).json({ success: true });
     }
@@ -208,10 +176,7 @@ export async function deleteMember(req, res) {
     if (!member_id) {
       return res.status(400).json({ message: "Member not found" });
     } else {
-      await client.query(
-        "DELETE FROM members WHERE member_id =($1) AND created_user = ($2)",
-        [member_id, userid]
-      );
+      await client`DELETE FROM members WHERE member_id = ${member_id} AND created_user = ${userid}`;
 
       return res.status(200).json({ success: true });
     }
@@ -225,9 +190,7 @@ export async function deleteAllMembers(req, res) {
   const userid = req.user.userid;
 
   try {
-    await client.query("DELETE FROM members WHERE created_user = ($1)", [
-      userid,
-    ]);
+    await client`DELETE FROM members WHERE created_user = ${userid}`;
 
     return res.status(200).json({ success: true });
   } catch (error) {

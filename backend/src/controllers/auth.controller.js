@@ -29,11 +29,8 @@ export async function signup(req, res) {
       return res.status(400).json({ message: "Invalid email format" });
     }
 
-    const existingUser = await client.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-    if (existingUser.rows.length > 0) {
+    const existingUsers = await client`SELECT * FROM users WHERE email = ${email}`;
+    if (existingUsers.length > 0) {
       console.log("Signup: Email already exists", email);
       return res
         .status(400)
@@ -42,11 +39,8 @@ export async function signup(req, res) {
       // Hash the password
       console.log("Hashing password with salt rounds:", saltRounds);
       const hash = await bcrypt.hash(password, Number(saltRounds) || 10);
-      const result = await client.query(
-        "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *",
-        [email, hash, username]
-      );
-      const user = result.rows[0];
+      const result = await client`INSERT INTO users (email, password, username) VALUES (${email}, ${hash}, ${username}) RETURNING *`;
+      const user = result[0];
       console.log("User created successfully:", user.email);
 
       // Auto-login after signup
@@ -79,15 +73,12 @@ export async function login(req, res) {
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
-    const userResult = await client.query(
-      "SELECT * FROM users WHERE email = $1",
-      [email]
-    );
-    if (userResult.rows.length === 0) {
+    const userResult = await client`SELECT * FROM users WHERE email = ${email}`;
+    if (userResult.length === 0) {
       console.log("Login: User not found", email);
       return res.status(401).json({ message: "Invalid credentials" });
     }
-    const user = userResult.rows[0];
+    const user = userResult[0];
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       console.log("Login: Password mismatch for", email);

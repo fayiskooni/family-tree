@@ -9,55 +9,37 @@ export async function createParentChild(req, res) {
   }
 
   try {
-    const genderResult = await client.query(
-      "SELECT gender FROM members Where member_id = ($1)",
-      [member_id]
-    );
+    const genderResult = await client`SELECT gender FROM members Where member_id = ${member_id}`;
 
-    if (genderResult.rows.length === 0) {
+    if (genderResult.length === 0) {
       return res.status(404).json({ error: "Member not found" });
     }
 
-    const memberGender = genderResult.rows[0].gender;
-    let marriageCheck;
+    const memberGender = genderResult[0].gender;
+    const marriageResult = memberGender === true 
+      ? await client`SELECT couple_id FROM couples WHERE husband_id = ${member_id};`
+      : await client`SELECT couple_id FROM couples WHERE wife_id = ${member_id};`;
 
-    if (memberGender === true) {
-      marriageCheck = "SELECT couple_id FROM couples WHERE husband_id = $1;";
-    } else {
-      marriageCheck = "SELECT couple_id FROM couples WHERE wife_id = $1;";
-    }
-
-    const marriageResult = await client.query(marriageCheck, [member_id]);
-
-    if (marriageResult.rows.length === 0 || !marriageResult.rows[0].couple_id) {
+    if (marriageResult.length === 0 || !marriageResult[0].couple_id) {
       return res.status(404).json({ error: "Couples not found. Member must be married to add children." });
     }
 
-    const couple_id = marriageResult.rows[0].couple_id;
+    const couple_id = marriageResult[0].couple_id;
     const addedChildren = [];
 
     for (const child_id of childrenIds) {
       // Check if child already has parents
-      const childExist = await client.query(
-        "SELECT * FROM parent_child WHERE child_id = ($1)",
-        [child_id]
-      );
+      const childExist = await client`SELECT * FROM parent_child WHERE child_id = ${child_id}`;
 
-      if (childExist.rows.length > 0) {
+      if (childExist.length > 0) {
         continue; // Skip if child already has parents
       }
 
       // Check if this specific combination already exists
-      const comboExist = await client.query(
-        "SELECT 1 FROM parent_child WHERE couple_id = $1 AND child_id = $2",
-        [couple_id, child_id]
-      );
+      const comboExist = await client`SELECT 1 FROM parent_child WHERE couple_id = ${couple_id} AND child_id = ${child_id}`;
 
-      if (comboExist.rows.length === 0) {
-        await client.query(
-          "INSERT INTO parent_child (couple_id , child_id) VALUES ($1,$2)",
-          [couple_id, child_id]
-        );
+      if (comboExist.length === 0) {
+        await client`INSERT INTO parent_child (couple_id , child_id) VALUES (${couple_id}, ${child_id})`;
         addedChildren.push(child_id);
       }
     }
@@ -72,38 +54,27 @@ export async function createParentChild(req, res) {
 export async function getParentChild(req, res) {
   const member_id = req.params.id;
 
-  const genderResult = await client.query(
-    "SELECT gender FROM members Where member_id = ($1)",
-    [member_id]
-  );
+  const genderResult = await client`SELECT gender FROM members Where member_id = ${member_id}`;
 
-  if (genderResult.rows.length === 0) {
+  if (genderResult.length === 0) {
     return res.status(404).json({ error: "Member not found" });
   }
 
-  const memberGender = genderResult.rows[0].gender;
+  const memberGender = genderResult[0].gender;
 
-  let marriageCheck;
+  const marriageResult = memberGender === true 
+    ? await client`SELECT couple_id FROM couples WHERE husband_id = ${member_id};`
+    : await client`SELECT couple_id FROM couples WHERE wife_id = ${member_id};`;
 
-  if (memberGender === true) {
-    marriageCheck = "SELECT couple_id FROM couples WHERE husband_id = $1;";
-  } else {
-    marriageCheck = "SELECT couple_id FROM couples WHERE wife_id = $1;";
+  if (marriageResult.length === 0 || marriageResult[0].couple_id === null) {
+    return res.status(404).json({ error: "Not Married" });
   }
+
   try {
-    const marriageResult = await client.query(marriageCheck, [member_id]);
+    const couple_id = marriageResult[0].couple_id;
 
-    if (marriageResult.rows[0].couple_id === null) {
-      return res.status(404).json({ error: "Not Married" });
-    }
-
-    const couple_id = marriageResult.rows[0].couple_id;
-
-    const result = await client.query(
-      "SELECT m.member_id AS child_id, m.name AS child_name FROM parent_child c JOIN members m ON c.child_id = m.member_id WHERE c.couple_id = ($1)",
-      [couple_id]
-    );
-    return res.status(201).json({ success: true, data: result.rows });
+    const result = await client`SELECT m.member_id AS child_id, m.name AS child_name FROM parent_child c JOIN members m ON c.child_id = m.member_id WHERE c.couple_id = ${couple_id}`;
+    return res.status(201).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Finding Children", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -114,12 +85,9 @@ export async function getAllChildren(req, res) {
   const family_id = req.params.id;
 
   try {
-    const result = await client.query(
-      "SELECT ch.* FROM parent_child ch JOIN members m ON ch.child_id = m.member_id JOIN family_members f ON m.member_id = f.member_id WHERE f.family_id =($1)",
-      [family_id]
-    );
+    const result = await client`SELECT ch.* FROM parent_child ch JOIN members m ON ch.child_id = m.member_id JOIN family_members f ON m.member_id = f.member_id WHERE f.family_id = ${family_id}`;
 
-    return res.status(200).json({ success: true, data: result.rows });
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     console.log("Error in Fetching all children", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -129,42 +97,31 @@ export async function getAllChildren(req, res) {
 export async function deleteParentChild(req, res) {
   const member_id = req.params.id;
   const child_id = req.body.member_id;
-  const genderResult = await client.query(
-    "SELECT gender FROM members Where member_id = ($1)",
-    [member_id]
-  );
+  const genderResult = await client`SELECT gender FROM members Where member_id = ${member_id}`;
 
-  if (genderResult.rows.length === 0) {
+  if (genderResult.length === 0) {
     return res.status(404).json({ error: "Member not found" });
   }
 
-  const memberGender = genderResult.rows[0].gender;
+  const memberGender = genderResult[0].gender;
 
-  let marriageCheck;
+  const marriageResult = memberGender === true 
+    ? await client`SELECT couple_id FROM couples WHERE husband_id = ${member_id};`
+    : await client`SELECT couple_id FROM couples WHERE wife_id = ${member_id};`;
 
-  if (memberGender === true) {
-    marriageCheck = "SELECT couple_id FROM couples WHERE husband_id = $1;";
-  } else {
-    marriageCheck = "SELECT couple_id FROM couples WHERE wife_id = $1;";
-  }
-
-  const marriageResult = await client.query(marriageCheck, [member_id]);
-
-  if (marriageResult.rows[0].couple_id === null) {
+  if (marriageResult.length === 0 || marriageResult[0].couple_id === null) {
     return res.status(404).json({ error: "Couples not found" });
   }
 
   async function checkParentChildCombination(couple_id, child_id) {
-    const query = `
+    const result = await client`
     SELECT EXISTS (
       SELECT 1 FROM parent_child
-      WHERE couple_id = $1 AND child_id = $2
+      WHERE couple_id = ${couple_id} AND child_id = ${child_id}
     ) AS exists;
   `;
-    const result = await client.query(query, [couple_id, child_id]);
 
-    // result.rows[0].exists will be true or false
-    return result.rows[0].exists;
+    return result[0].exists;
   }
 
   const couple_id = marriageResult.rows[0].couple_id;
@@ -173,10 +130,7 @@ export async function deleteParentChild(req, res) {
       if (!exists) {
         return res.status(400).json({ message: "Combination Not exists!" });
       }
-      await client.query(
-        "DELETE FROM parent_child WHERE couple_id =($1) AND child_id = ($2)",
-        [couple_id, child_id]
-      );
+      await client`DELETE FROM parent_child WHERE couple_id = ${couple_id} AND child_id = ${child_id}`;
       return res.status(201).json({ success: true });
     });
   } catch (error) {

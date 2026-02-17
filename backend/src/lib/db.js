@@ -1,27 +1,18 @@
-import pg from "pg";
+import { neon } from "@neondatabase/serverless";
 import "dotenv/config";
 
-const { Pool } = pg;
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  },
-  max: 20, // max number of clients in the pool
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+const sql = neon(process.env.DATABASE_URL);
 
 const connectDB = async () => {
   try {
-    const client = await pool.connect();
-    client.release();
+    // Neon HTTP client doesn't need a persistent connection, 
+    // but we can do a simple query to verify the URL
+    await sql`SELECT 1`;
+    console.log("Neon PostgreSQL connected via HTTP");
   } catch (err) {
-    // Silence error logs during quick lambda lifecycle unless fatal
+    console.error("Failed to connect to Neon:", err);
   }
 };
 
 export default connectDB;
-export const client = pool; // Export the pool as 'client' to maintain compatibility with existing controllers
-
+export { sql as client }; // Temporary alias for migration

@@ -5,16 +5,14 @@ export async function createFamilyMember(req, res) {
   const member_id = req.body.member_id;
 
   async function checkCombination(family_id, member_id) {
-    const query = `
+    const result = await client`
     SELECT EXISTS (
       SELECT 1 FROM family_members
-      WHERE family_id = $1 AND member_id = $2
+      WHERE family_id = ${family_id} AND member_id = ${member_id}
     ) AS exists;
   `;
-    const result = await client.query(query, [family_id, member_id]);
 
-    // result.rows[0].exists will be true or false
-    return result.rows[0].exists;
+    return result[0].exists;
   }
 
   try {
@@ -26,12 +24,9 @@ export async function createFamilyMember(req, res) {
         return res.status(400).json({ message: "Combination already exists!" });
       }
     });
-    const result = await client.query(
-      "INSERT INTO family_members (family_id , member_id) VALUES ($1,$2)",
-      [family_id, member_id]
-    );
+    const result = await client`INSERT INTO family_members (family_id , member_id) VALUES (${family_id}, ${member_id}) RETURNING *`;
 
-    return res.status(201).json({ success: true, data: result.rows[0] });
+    return res.status(201).json({ success: true, data: result[0] });
   } catch (error) {
     console.log("Error in Family Member Creation", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -44,12 +39,9 @@ export async function getFamilyMembers(req, res) {
     if (!family_id) {
       return res.status(400).json({ message: "Family not found" });
     } else {
-      const result = await client.query(
-        "SELECT m.member_id,name,age FROM members AS m JOIN family_members AS fm ON m.member_id = fm.member_id WHERE fm.family_id =($1)",
-        [family_id]
-      );
+      const result = await client`SELECT m.member_id,name,age FROM members AS m JOIN family_members AS fm ON m.member_id = fm.member_id WHERE fm.family_id = ${family_id}`;
 
-      return res.status(200).json({ success: true, data: result.rows });
+      return res.status(200).json({ success: true, data: result });
     }
   } catch (error) {
     console.log("Error in Finding Member", error);
@@ -66,10 +58,7 @@ export async function deleteFamilyMember(req, res) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
 
-    await client.query(
-      "DELETE FROM family_members WHERE family_id = $1 AND member_id = $2",
-      [familyId, member_id]
-    );
+    await client`DELETE FROM family_members WHERE family_id = ${familyId} AND member_id = ${member_id}`;
 
     return res.status(200).json({ success: true });
   } catch (error) {
@@ -80,7 +69,7 @@ export async function deleteFamilyMember(req, res) {
 
 export async function deleteAllFAmilyMembers(req, res) {
   try {
-    await client.query("DELETE FROM family_members");
+    await client`DELETE FROM family_members`;
 
     return res.status(200).json({ success: true });
   } catch (error) {
