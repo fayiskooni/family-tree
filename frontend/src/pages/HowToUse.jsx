@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import {
   BookOpen,
   Home,
@@ -8,126 +9,158 @@ import {
   TreePine,
   Pencil,
   Info,
+  ChevronRight,
+  Sparkles,
 } from "lucide-react";
+
+const StepCard = ({ number, title, icon: Icon, children, color }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay: number * 0.1 }}
+    className="relative group lg:p-8 p-6 rounded-3xl bg-base-100/40 backdrop-blur-xl border border-base-content/10 hover:border-primary/30 transition-all duration-500 shadow-xl hover:shadow-primary/5 cursor-default overflow-hidden"
+  >
+    <div className={`absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-${color}-500/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-700`} />
+    <div className="flex items-start gap-6">
+      <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-${color}-500/20 to-${color}-600/40 flex items-center justify-center shadow-inner border border-${color}-500/20`}>
+        <Icon className={`w-7 h-7 text-${color}-500`} />
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-3 mb-1">
+          <span className={`text-xs font-bold uppercase tracking-widest text-${color}-500/70`}>Step 0{number}</span>
+          <ChevronRight className="w-3 h-3 text-base-content/20" />
+        </div>
+        <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-primary transition-colors duration-300">
+          {title}
+        </h3>
+        <div className="text-base-content/70 leading-relaxed space-y-2">
+          {children}
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
 
 export default function HowToUse() {
   return (
-    <div className="p-6 max-w-3xl mx-auto text-gray-800">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-        <BookOpen className="w-7 h-7 text-blue-600" />
-        How to Use Family Tree
-      </h1>
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden pt-16 pb-12 lg:pt-24 lg:pb-20 px-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-primary/10 blur-[120px] rounded-full -z-10"
+        />
 
-      {/* Step 1 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <Home className="w-6 h-6 text-green-600" />
-          1️⃣ Create a Family
-        </h2>
-        <p className="leading-relaxed">
-          Go to the <strong>Home</strong> or <strong>Family</strong> page (both work the same way).
-          Click on <strong>"Create Family"</strong> to make a new family record, give it a name, and save.
-          <br />
-          <span className="text-sm text-gray-600">
-             You can create multiple families and manage each separately.
-          </span>
-        </p>
-      </section>
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-primary text-sm font-medium mb-8"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Interactive Guide</span>
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl lg:text-6xl font-black mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-base-content to-base-content/50"
+          >
+            Experience your family <br /> legacy in high-fidelity.
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-lg text-base-content/60 max-w-2xl mx-auto leading-relaxed"
+          >
+            A comprehensive guide to building, connecting, and visualizing your ancestral journey with our premium family mapping tools.
+          </motion.p>
+        </div>
+      </div>
 
-      {/* Step 2 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <Users className="w-6 h-6 text-pink-600" />
-          2️⃣ Add Family Members
-        </h2>
-        <p className="leading-relaxed">
-          Navigate to the <strong>Members</strong> page. Click{" "}
-          <strong>"Add Member"</strong> to create people who belong to your family.
-          Fill in details such as <strong>Name</strong> and <strong>Gender</strong>.
-          <br />
-          <span className="text-sm text-gray-600">
-             Add all members before creating relationships between them.
-          </span>
-        </p>
-      </section>
+      <div className="max-w-5xl mx-auto px-6 pb-24 grid gap-8">
+        <StepCard number={1} title="Create a Family" icon={Home} color="blue">
+          <p>
+            Start by creating a family container. Think of this as your digital family vault.
+          </p>
+          <p className="text-sm italic">
+            Go to the <span className="font-semibold text-primary">Home</span> page and click "Create Family" to initialize your record.
+          </p>
+        </StepCard>
 
-      {/* Step 3 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <Pencil className="w-6 h-6 text-yellow-600" />
-          3️⃣ Add Members to a Family
-        </h2>
-        <p className="leading-relaxed">
-          Go back to the <strong>Family</strong> page and open the family you created.
-          You’ll see a <strong>✏️ pencil icon</strong> near the family button — hover and click it.
-          From there, choose members to include in that family and save.
-          <br />
-          <span className="text-sm text-gray-600">
-             Once added, they’ll appear in that family’s member list.
-          </span>
-        </p>
-      </section>
+        <StepCard number={2} title="Add Family Members" icon={Users} color="pink">
+          <p>
+            Populate your database with individuals. Add names, genders, and biographical details.
+          </p>
+          <p className="text-sm italic">
+            Head to the <span className="font-semibold text-primary">Members</span> tab and click "Add Member" for each person.
+          </p>
+        </StepCard>
 
-      {/* Step 4 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <LinkIcon className="w-6 h-6 text-purple-600" />
-          4️⃣ Create Relationships
-        </h2>
-        <p className="leading-relaxed">
-          In the <strong>Family</strong> page, select your family and open the members list.
-          Click on a member to <strong>add a relation</strong> (e.g., husband, wife, child).
-          <br />
-          You only need to update one member — it automatically updates for the other person.
-          <br />
-          <span className="text-sm text-gray-600">
-             Example: If A selects B as wife, then B’s details automatically show A as husband.
-          </span>
-        </p>
-      </section>
+        <StepCard number={3} title="Map to Families" icon={Pencil} color="yellow">
+          <p>
+            Assign members to their respective families. This builds the membership list for each group.
+          </p>
+          <p className="text-sm italic">
+            On the <span className="font-semibold text-primary">Family</span> page, use the pencil icon to associate members.
+          </p>
+        </StepCard>
 
-      {/* Step 5 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <TreePine className="w-6 h-6 text-emerald-600" />
-          5️⃣ View Your Family Tree
-        </h2>
-        <p className="leading-relaxed">
-          Once relationships are added, look near the <strong>✏️ pencil icon</strong> again.
-          You’ll see a button labeled <strong>“View My Family Tree”</strong>.
-          Click it to open an <strong>interactive visual tree</strong> that shows your entire family.
-          <br />
-          <span className="text-sm text-gray-600">
-             You can zoom, pan, and explore each branch easily.
-          </span>
-        </p>
-      </section>
+        <StepCard number={4} title="Define Relationships" icon={LinkIcon} color="purple">
+          <p>
+            Interconnect your members. Define marriages, partnerships, and parent-child links.
+          </p>
+          <p className="text-sm italic">
+            Open a family member's profile and click "Add Relation". Our system syncs both profiles instantly.
+          </p>
+        </StepCard>
 
-      {/* Step 6 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3 flex items-center gap-2">
-          <Info className="w-6 h-6 text-blue-600" />
-          ⚙️ Note on Performance
-        </h2>
-        <p className="leading-relaxed">
-          This project uses <strong>free-tier hosting</strong> services on <strong>Render</strong> and
-          a <strong>Neon database</strong>.  
-          As a result, the app may feel a little slow at times — especially when waking up from sleep.
-          <br />
-          <span className="text-sm text-gray-600">
-             Don’t worry — just wait a few seconds; everything will load correctly!
-          </span>
-        </p>
-      </section>
+        <StepCard number={5} title="Visualize the Journey" icon={TreePine} color="emerald">
+          <p>
+            The pinnacle of the experience—your interactive, auto-layout family tree.
+          </p>
+          <p className="text-sm italic">
+            Click <span className="font-semibold text-primary">"View My Family Tree"</span> to see a beautiful, zoomable graph of your lineage.
+          </p>
+        </StepCard>
 
-      {/* Step 7 */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-3">🎉 All Done!</h2>
-        <p className="leading-relaxed">
-          You’ve successfully created your digital family tree!  
-          You can now edit members, add new families, or explore your beautiful tree anytime.
-        </p>
-      </section>
+        {/* Note on Performance */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-12 p-8 rounded-3xl bg-blue-500/5 border border-blue-500/20 text-center relative overflow-hidden group"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
+          <Info className="w-10 h-10 text-blue-500 mx-auto mb-4 opacity-50 group-hover:scale-110 transition-transform duration-500" />
+          <h4 className="text-lg font-bold mb-2">Architectural Note</h4>
+          <p className="text-base-content/60 max-w-xl mx-auto text-sm leading-relaxed">
+            We utilize high-performance cloud infrastructure including Neon's serverless PostgreSQL.
+            On the first request, the database may undergo a brief "cold start"—we appreciate your patience as the system scales to meet your request.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center py-12"
+        >
+          <h2 className="text-3xl font-black mb-4">Your legacy starts here.</h2>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-8 py-4 rounded-2xl bg-primary text-primary-content font-bold shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
+            onClick={() => window.location.href = "/"}
+          >
+            Start Building Now
+          </motion.button>
+        </motion.div>
+      </div>
     </div>
   );
 }

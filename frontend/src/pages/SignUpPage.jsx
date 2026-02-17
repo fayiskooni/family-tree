@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import useSignUp from "../hooks/useSignUP";
+import useSignUp from "../hooks/useSignUp";
 import { Link } from "react-router";
+import { motion, AnimatePresence } from "framer-motion";
+import { TreeDeciduous, ArrowRight, User, Mail, Lock, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const SignUpPage = () => {
   const [signupData, setSignupData] = useState({
@@ -9,7 +14,6 @@ const SignUpPage = () => {
     password: "",
   });
 
-  // Custom hook
   const { isPending, error, signUpMutation } = useSignUp();
 
   const handleSignup = (e) => {
@@ -17,144 +21,154 @@ const SignUpPage = () => {
     signUpMutation(signupData);
   };
 
+  const errorMessage = error?.response?.data?.message || error?.message || (error ? "Identity registration failed" : null);
+
   return (
-    <div className="min-h-screen flex bg-gray-100 items-center justify-center">
-      <div className="bg-white rounded-2xl shadow-lg flex w-[900px] max-w-5xl overflow-hidden">
-        {/* Left side */}
-        <div className="w-1/2 bg-cover bg-center flex flex-col justify-end p-8 text-white relative">
-          <img src="/Tree.png" alt="tree" />
-          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-l-2xl"></div>
+    <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-base-100">
+      {/* Background Decorative Elements */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -ml-64 -mt-64 -z-10" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full -mr-32 -mb-32 -z-10" />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-5xl grid lg:grid-cols-2 bg-base-100 rounded-[2.5rem] border border-base-content/5 shadow-2xl overflow-hidden"
+      >
+        {/* Visual Side */}
+        <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden bg-base-content/5">
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,var(--primary)_0%,transparent_50%)]" />
+          </div>
+
           <div className="relative z-10">
-            <h2 className="text-lg font-semibold italic mb-2">
-              “Build your family story together”
+            <div className="flex items-center gap-2 mb-8">
+              <div className="p-2 rounded-xl bg-primary text-primary-content shadow-lg shadow-primary/20">
+                <TreeDeciduous className="size-5" />
+              </div>
+              <span className="font-black uppercase tracking-[0.3em] text-[10px] opacity-40 text-base-content">Heritage Archive</span>
+            </div>
+            <h2 className="text-4xl font-black tracking-tighter leading-tight mb-6">
+              Begin your<br />
+              <span className="text-primary italic font-medium">ancestral journey.</span>
             </h2>
+          </div>
+
+          <div className="relative z-10 mt-auto space-y-4">
+            {[
+              "Secure identity encryption",
+              "World-wide lineage mapping",
+              "Infinite generational depth"
+            ].map((feature, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <CheckCircle2 className="size-3" />
+                </div>
+                <span className="text-xs font-bold text-base-content/60">{feature}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Right side */}
-        <div className="w-1/2 p-10 flex flex-col justify-center">
-          {/* Error message if any */}
-          {error && (
-            <div className=" alert alert-error mb-4">
-              <span>{error.response.data.message}</span>
+        {/* Form Side */}
+        <div className="p-8 lg:p-16 flex flex-col justify-center border-l border-base-content/5">
+          <div className="max-w-sm mx-auto w-full">
+            <div className="mb-10 text-center lg:text-left">
+              <h1 className="text-3xl font-black tracking-tight mb-2">Create Record</h1>
+              <p className="text-sm text-base-content/40 font-medium">Join the global network of lineage preservation.</p>
             </div>
-          )}
-          <form onSubmit={handleSignup}>
-            <h2 className="text-2xl font-bold mb-2 text-gray-800">
-              Create your <span className="text-purple-600">FamilyTree</span>{" "}
-              account
-            </h2>
-            <p className="text-gray-500 mb-6 text-sm">
-              Start building your family tree today.
-            </p>
 
-            <div className="space-y-4">
-              {/* Full name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  value={signupData.username}
-                  onChange={(e) =>
-                    setSignupData({
-                      ...signupData,
-                      username: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </div>
+            <AnimatePresence mode="wait">
+              {errorMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="mb-8"
+                >
+                  <div className="p-4 rounded-2xl bg-error/10 border border-error/20 flex items-center gap-3 text-error">
+                    <AlertCircle className="size-5 shrink-0" />
+                    <span className="text-xs font-bold tracking-tight">{errorMessage}</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="jordan@gmail.com"
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  value={signupData.email}
-                  onChange={(e) =>
-                    setSignupData({ ...signupData, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-
-              {/* Password */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  value={signupData.password}
-                  onChange={(e) =>
-                    setSignupData({
-                      ...signupData,
-                      password: e.target.value,
-                    })
-                  }
-                  required
-                />
-                <p className="block text-sm font-medium text-gray-700">
-                  password must be at least 6 characters long
-                </p>
-              </div>
-              {/* TERMS & CONDITIONS */}
-              <div className=" form-control">
-                <label className=" label cursor-pointer justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    className=" checkbox checkbox-sm"
+            <form onSubmit={handleSignup} className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Identity Name</Label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <Input
+                    placeholder="Jordan Walker"
+                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    value={signupData.username}
+                    onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
                     required
                   />
-                  <span className=" text-xs text-gray-700">
-                    I agree to the{" "}
-                    <span className=" text-purple-600 hover:underline">
-                      terms of service
-                    </span>{" "}
-                    and{" "}
-                    <span className=" text-purple-600 hover:underline">
-                      privacy policy
-                    </span>
-                  </span>
-                </label>
+                </div>
               </div>
 
-              {/* Submit button */}
-              <button
-                className="w-full bg-purple-600 text-white p-2 rounded-lg hover:bg-purple-700 transition"
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Archive Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <Input
+                    type="email"
+                    placeholder="jordan@legacy.com"
+                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    value={signupData.email}
+                    onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Security Pattern</Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
+                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    value={signupData.password}
+                    onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                    required
+                  />
+                </div>
+                <p className="text-[9px] font-bold text-base-content/30 ml-1 italic italic">Minimum 6 alphanumeric characters required</p>
+              </div>
+
+              <Button
                 type="submit"
+                className="w-full h-12 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 gap-2"
+                disabled={isPending}
               >
                 {isPending ? (
                   <>
-                    <span className=" loading loading-spinner loading-sm"></span>
-                    loading...
+                    <Loader2 className="size-4 animate-spin" />
+                    Registering...
                   </>
                 ) : (
-                  "Create Account"
+                  <>
+                    Commit Record
+                    <ArrowRight className="size-4" />
+                  </>
                 )}
-              </button>
-            </div>
-            <div className=" text-center mt-4">
-              <p className=" text-sm text-gray-500">
-                Already have an account?{" "}
-                <Link to="/login" className="text-purple-600 hover:underline">
-                  Sign in
+              </Button>
+            </form>
+
+            <div className="mt-10 text-center">
+              <p className="text-xs font-medium text-base-content/40">
+                Already registered?{" "}
+                <Link to="/login" className="text-primary font-black hover:underline underline-offset-4 tracking-tight">
+                  Initialize Session
                 </Link>
               </p>
             </div>
-          </form>
+          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

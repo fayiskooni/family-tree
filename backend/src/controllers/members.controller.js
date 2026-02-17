@@ -1,24 +1,34 @@
 import { client } from "../lib/db.js";
 
+const isValidDate = (dateString) => {
+  if (!dateString) return false;
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date);
+};
+
 export async function createMember(req, res) {
   const { name, gender, age, date_of_birth, date_of_death, blood_group } =
     req.body.member;
   const userid = req.user.userid;
 
   try {
-    if (!name || !gender || !age) {
+    if (!name || gender === undefined || gender === null || gender === "" || !age) {
       return res.status(400).json({
-        message: "Name , Gender and Age fields are required",
+        message: "Name, Gender and Age fields are required",
         missingFields: [
           !name && "name",
-          !gender && "gender",
+          (gender === undefined || gender === null || gender === "") && "gender",
           !age && "age",
         ].filter(Boolean),
       });
     } else {
+      const formatted_dob = isValidDate(date_of_birth) ? date_of_birth : null;
+      const formatted_dod = isValidDate(date_of_death) ? date_of_death : null;
+      const parsed_age = parseInt(age);
+
       await client.query(
         "INSERT INTO members (name, gender, age, date_of_birth, date_of_death, blood_group, created_user) VALUES ($1,$2,$3,$4,$5,$6,$7)",
-        [name, gender, age, date_of_birth, date_of_death, blood_group, userid]
+        [name, gender, parsed_age, formatted_dob, formatted_dod, blood_group || null, userid]
       );
 
       return res.status(201).json({ success: true });

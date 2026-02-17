@@ -97,14 +97,14 @@ export async function getCouple(req, res) {
 
   if (memberGender === true) {
     marriageCheck = `
-    SELECT m.name 
+    SELECT m.name, c.wife_id, c.husband_id
     FROM couples c
     JOIN members m ON m.member_id = c.wife_id
     WHERE c.husband_id = $1;
   `;
   } else {
     marriageCheck = `
-    SELECT m.name 
+    SELECT m.name, c.wife_id, c.husband_id
     FROM couples c
     JOIN members m ON m.member_id = c.husband_id
     WHERE c.wife_id = $1;

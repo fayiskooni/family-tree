@@ -9,9 +9,11 @@ const jwtSecret = process.env.JWT_SECRET;
 
 export async function signup(req, res) {
   const { email, password, username } = req.body;
+  console.log("Signup attempt:", { email, username });
 
   try {
     if (!email || !password || !username) {
+      console.log("Signup missing fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -32,17 +34,21 @@ export async function signup(req, res) {
       [email]
     );
     if (existingUser.rows.length > 0) {
+      console.log("Signup: Email already exists", email);
       return res
         .status(400)
         .json({ message: "Email already exists, please use a different one" });
     } else {
       // Hash the password
-      const hash = await bcrypt.hash(password, Number(saltRounds));
+      console.log("Hashing password with salt rounds:", saltRounds);
+      const hash = await bcrypt.hash(password, Number(saltRounds) || 10);
       const result = await client.query(
         "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING *",
         [email, hash, username]
       );
       const user = result.rows[0];
+      console.log("User created successfully:", user.email);
+
       // Auto-login after signup
       const token = jwt.sign(
         { id: user.id, email: user.email, username: user.username },
@@ -60,13 +66,15 @@ export async function signup(req, res) {
       return res.status(201).json({ success: true, token, user });
     }
   } catch (error) {
-    console.log("Error in signup controller", error);
+    console.log("Error in signup controller:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
 export async function login(req, res) {
   const { email, password } = req.body;
+  console.log("Login attempt:", { email });
+
   try {
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
@@ -76,12 +84,14 @@ export async function login(req, res) {
       [email]
     );
     if (userResult.rows.length === 0) {
-      return res.status(401).json({ message: "Invalid User" });
+      console.log("Login: User not found", email);
+      return res.status(401).json({ message: "Invalid credentials" });
     }
     const user = userResult.rows[0];
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.status(401).json({ message: "Invalid USer" });
+      console.log("Login: Password mismatch for", email);
+      return res.status(401).json({ message: "Invalid credentials" });
     }
     // Generate JWT token
     const token = jwt.sign(
@@ -98,9 +108,10 @@ export async function login(req, res) {
       maxAge: 24 * 60 * 60 * 1000, 
     });
 
+    console.log("Login successful:", email);
     return res.status(200).json({ success: true, token, user });
   } catch (error) {
-    console.log("Error in login controller", error);
+    console.log("Error in login controller:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }

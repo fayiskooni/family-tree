@@ -27,7 +27,8 @@ const App = () => {
   if (isLoading) return <PageLoader />;
 
   return (
-    <div className="h-screen" data-theme={theme}>
+    <div className="min-h-screen" data-theme={theme}>
+      <Toaster richColors position="top-right" />
       <Routes>
         <Route
           path="/"
@@ -35,7 +36,6 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <HomePage />
-                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />
@@ -44,7 +44,7 @@ const App = () => {
         />
         <Route
           path="/signup"
-          element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/login" />}
+          element={!isAuthenticated ? <SignUpPage /> : <Navigate to="/" />}
         />
         <Route
           path="/login"
@@ -56,7 +56,6 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <MembersPage />
-                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />
@@ -69,7 +68,6 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <FamilyPage />
-                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />
@@ -80,9 +78,9 @@ const App = () => {
           path="/treeView/family/:id"
           element={
             authUser ? (
-              <Layout showSidebar={true}>
+              <Layout showSidebar={true} hideLogout={true}>
                 <ReactFlowProvider>
-                  <div style={{ width: "100%", height: "700px" }}>
+                  <div className="w-full h-[calc(100vh-80px)]">
                     <FamilyTreePage />
                   </div>
                 </ReactFlowProvider>
@@ -98,14 +96,13 @@ const App = () => {
             authUser ? (
               <Layout showSidebar={true}>
                 <MemberDetailsPage />
-                <Toaster richColors position="top-center" />
               </Layout>
             ) : (
               <Navigate to="/login" />
             )
           }
         />
-         <Route
+        <Route
           path="/userGuide"
           element={
             authUser ? (

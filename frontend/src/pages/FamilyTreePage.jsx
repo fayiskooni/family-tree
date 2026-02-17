@@ -11,7 +11,9 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { getAllChildren, getAllCouples, getFamilyMembers } from "@/lib/api";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
+import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // ✅ Create a single ELK instance
 const elk = new ELK();
@@ -160,7 +162,7 @@ export default function FamilyTreePage() {
 
   // STEP 6: Render graph
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div className="w-full h-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -168,9 +170,34 @@ export default function FamilyTreePage() {
         onEdgesChange={onEdgesChange}
         fitView
       >
-        <Panel position="top-right">
-          <button onClick={() => handleLayoutChange("DOWN")}>Vertical</button>
-          <button onClick={() => handleLayoutChange("RIGHT")}>Horizontal</button>
+        <Panel position="top-left" className="flex gap-4 items-center bg-base-100/80 backdrop-blur-md p-2 rounded-2xl border border-base-content/10 shadow-xl m-4">
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest">
+              <ArrowLeft className="size-4" />
+              Back to Home
+            </Button>
+          </Link>
+          <div className="h-4 w-px bg-base-content/10 mx-2" />
+          <div className="flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest"
+              onClick={() => handleLayoutChange("DOWN")}
+            >
+              <LayoutList className="size-4" />
+              Vertical
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest"
+              onClick={() => handleLayoutChange("RIGHT")}
+            >
+              <LayoutGrid className="size-4" />
+              Horizontal
+            </Button>
+          </div>
         </Panel>
         <Background />
       </ReactFlow>
