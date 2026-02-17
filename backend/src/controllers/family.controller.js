@@ -85,7 +85,7 @@ export async function deleteFamily(req, res) {
 
   try {
     if (!family_id) {
-      return res.status(400).json({ message: "Family not found anywhere" });
+      return res.status(400).json({ message: "Family not found" });
     } else {
       await client`DELETE FROM families WHERE family_id = ${family_id}`;
 
