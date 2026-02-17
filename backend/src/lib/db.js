@@ -8,13 +8,19 @@ const client = new pg.Client({
 
 let isConnected = false;
 const connectDB = async () => {
-  if (isConnected) return;
+  // If we're already connected, don't do anything
+  if (isConnected && client._connected) return;
+  
   try {
+    // If there's an old connection that's broken, end it gracefully
+    if (client._connected) await client.end().catch(() => {});
+    
     await client.connect();
     isConnected = true;
     console.log("Connected to Neon PostgreSQL database");
   } catch (err) {
     console.error("Failed to connect to database:", err);
+    isConnected = false;
   }
 };
 
