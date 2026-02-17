@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import jwt from "jsonwebtoken";
 import { client } from "../lib/db.js";
 
@@ -12,7 +13,7 @@ export const protectRoute = async (req, res, next) => {
     }
 
     // Use correct env var name
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, env.JWT_SECRET);
     if (!decoded) {
       return res.status(401).json({ message: "Unauthorized - Invalid token" });
     }

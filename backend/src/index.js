@@ -1,8 +1,11 @@
+import { env } from "cloudflare:workers";
+import { httpServerHandler } from "cloudflare:node";
+import http from "node:http";
 import express from "express";
-import "dotenv/config";
+// import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path";
+// import path from "path";
 
 import authRoutes from "./routes/auth.route.js";
 import familyRoutes from "./routes/family.route.js";
@@ -11,15 +14,15 @@ import membersRoutes from "./routes/members.route.js";
 import coupleRoutes from "./routes/couple.route.js";
 import parentChildRoutes from "./routes/parentChild.route.js";
 
-import connectDB from "./lib/db.js";
+// import connectDB from "./lib/db.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = env.PORT;
 
-import { fileURLToPath } from 'url';
+// import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -39,7 +42,7 @@ app.use("/api/auth", coupleRoutes);
 app.use("/api/auth", parentChildRoutes);
 
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", env: process.env.NODE_ENV });
+  res.status(200).json({ status: "ok", env: env.NODE_ENV });
 });
 
 app.use((err, req, res, next) => {
@@ -48,21 +51,25 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection pool setup
-connectDB();
+// connectDB();
 
-if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
-  const frontendPath = path.resolve(process.cwd(), "public");
-  app.use(express.static(frontendPath));
-  
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+// if (env.NODE_ENV === "production" || env.VERCEL === "1") {
+// const frontendPath = path.resolve(process.cwd(), "public");
+// app.use(express.static(frontendPath));
+
+app.get(/.*/, (req, res) => {
+  // res.sendFile(path.join(frontendPath, "index.html"));
+  res.json({ message: "Express.js running on Cloudflare Workers!" });
+});
+// }
+
+const server = http.createServer(app);
+
+if (env.VERCEL !== "1") {
+  server.listen(Number(PORT || 5001), () => {
+    console.log(`Server running on port ${Number(PORT || 5001)}`);
   });
 }
 
-if (process.env.VERCEL !== "1") {
-  app.listen(PORT || 5001, () => {
-    console.log(`Server running on port ${PORT || 5001}`);
-  });
-}
-
-export default app;
+// export default app;
+export default httpServerHandler({ port: Number(PORT || 5001) });

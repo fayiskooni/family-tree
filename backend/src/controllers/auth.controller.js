@@ -1,11 +1,11 @@
-import { client } from "../lib/db.js"; 
-import bcrypt from "bcryptjs"; 
-import jwt from "jsonwebtoken"; 
+import { client } from "../lib/db.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-import "dotenv/config";
+import { env } from "cloudflare:workers";
 
-const saltRounds = process.env.SALT_ROUND;
-const jwtSecret = process.env.JWT_SECRET;
+const saltRounds = env.SALT_ROUND;
+const jwtSecret = env.JWT_SECRET;
 
 export async function signup(req, res) {
   const { email, password, username } = req.body;
@@ -52,7 +52,7 @@ export async function signup(req, res) {
 
       res.cookie("jwt", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 24 * 60 * 60 * 1000,
       });
@@ -94,9 +94,9 @@ export async function login(req, res) {
     // Set token as httpOnly cookie
     res.cookie("jwt", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, 
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     console.log("Login successful:", email);

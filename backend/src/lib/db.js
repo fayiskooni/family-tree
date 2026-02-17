@@ -1,7 +1,7 @@
 import { neon } from "@neondatabase/serverless";
-import "dotenv/config";
+import { env } from "cloudflare:workers";
 
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(env.DATABASE_URL);
 
 const connectDB = async () => {
   try {
