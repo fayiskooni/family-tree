@@ -23,8 +23,8 @@ const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true, // allow frontend to send cookies
+    origin: true, // Allow all for easier Vercel deployment
+    credentials: true,
   })
 );
 
@@ -47,19 +47,15 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error", error: err.message });
 });
 
-// Database connection
-connectDB().catch(err => console.error("Initial DB connection failed:", err));
+// Database connection pool setup
+connectDB();
 
 if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
   const frontendPath = path.resolve(process.cwd(), "public");
-  console.log("Serving static files from:", frontendPath);
-  
   app.use(express.static(frontendPath));
   
   app.get(/.*/, (req, res) => {
-    const indexPath = path.join(frontendPath, "index.html");
-    console.log("Looking for index.html at:", indexPath);
-    res.sendFile(indexPath);
+    res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
