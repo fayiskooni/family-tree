@@ -42,7 +42,7 @@ app.use("/api/auth", parentChildRoutes);
 connectDB().catch(err => console.error("Initial DB connection failed:", err));
 
 if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
-  const frontendPath = path.resolve(process.cwd(), "frontend", "dist");
+  const frontendPath = path.resolve(process.cwd(), "public");
   console.log("Serving static files from:", frontendPath);
   
   app.use(express.static(frontendPath));
