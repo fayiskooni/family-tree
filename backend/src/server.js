@@ -42,12 +42,15 @@ app.use("/api/auth", parentChildRoutes);
 connectDB().catch(err => console.error("Initial DB connection failed:", err));
 
 if (process.env.NODE_ENV === "production" || process.env.VERCEL === "1") {
-  // Static paths on Vercel are absolute from root
-  const frontendPath = path.join(__dirname, "../../frontend/dist");
+  const frontendPath = path.resolve(process.cwd(), "frontend", "dist");
+  console.log("Serving static files from:", frontendPath);
+  
   app.use(express.static(frontendPath));
   
   app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
+    const indexPath = path.join(frontendPath, "index.html");
+    console.log("Looking for index.html at:", indexPath);
+    res.sendFile(indexPath);
   });
 }
 

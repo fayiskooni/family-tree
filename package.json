@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm install && npm run build && ls dist",
     "start": "node backend/src/server.js"
   },
   "repository": {
@@ -19,12 +19,13 @@
   "homepage": "https://github.com/fayiskooni/family-tree#readme",
   "description": "",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "path": "^0.12.7",
     "pg": "^8.16.3"
   }
 }
