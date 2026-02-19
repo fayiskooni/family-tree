@@ -1,10 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  BookOpen,
   Home,
   Users,
-  UserPlus,
   Link as LinkIcon,
   TreePine,
   Pencil,
@@ -13,134 +11,135 @@ import {
   Sparkles,
 } from "lucide-react";
 
-const StepCard = ({ number, title, icon: Icon, children, color }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.5, delay: number * 0.1 }}
-    className="relative group lg:p-8 p-6 rounded-3xl bg-base-100/40 backdrop-blur-xl border border-base-content/10 hover:border-primary/30 transition-all duration-500 shadow-xl hover:shadow-primary/5 cursor-default overflow-hidden"
-  >
-    <div className={`absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-${color}-500/10 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-700`} />
-    <div className="flex items-start gap-6">
-      <div className={`flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-${color}-500/20 to-${color}-600/40 flex items-center justify-center shadow-inner border border-${color}-500/20`}>
-        <Icon className={`w-7 h-7 text-${color}-500`} />
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-1">
-          <span className={`text-xs font-bold uppercase tracking-widest text-${color}-500/70`}>Step 0{number}</span>
-          <ChevronRight className="w-3 h-3 text-base-content/20" />
+const STEP_STYLES = {
+  green: {
+    orb: "bg-[#3b775f]/18",
+    iconWrap: "bg-[#3b775f]/15 border-[#3b775f]/35",
+    icon: "text-[#2f6652]",
+    tag: "text-[#2f6652]",
+  },
+  gold: {
+    orb: "bg-[#b69557]/18",
+    iconWrap: "bg-[#b69557]/18 border-[#b69557]/35",
+    icon: "text-[#8a6b34]",
+    tag: "text-[#7d6334]",
+  },
+  rust: {
+    orb: "bg-[#ad7458]/18",
+    iconWrap: "bg-[#ad7458]/18 border-[#ad7458]/35",
+    icon: "text-[#875540]",
+    tag: "text-[#7f5241]",
+  },
+};
+
+const StepCard = ({ number, title, icon: Icon, children, tone }) => {
+  const style = STEP_STYLES[tone];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: number * 0.08 }}
+      className="group relative overflow-hidden rounded-[1.7rem] border border-[#b6a77f]/35 bg-[#fffaf0]/82 p-6 shadow-[0_18px_44px_-30px_rgba(20,58,45,0.45)] transition-all duration-300 hover:-translate-y-0.5"
+    >
+      <div className={`absolute -right-6 -top-8 h-24 w-24 rounded-full blur-3xl ${style.orb}`} />
+      <div className="relative z-10 flex items-start gap-4">
+        <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border ${style.iconWrap}`}>
+          <Icon className={`h-6 w-6 ${style.icon}`} />
         </div>
-        <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-primary transition-colors duration-300">
-          {title}
-        </h3>
-        <div className="text-base-content/70 leading-relaxed space-y-2">
-          {children}
+
+        <div className="flex-1">
+          <div className="mb-2 flex items-center gap-2">
+            <span className={`text-[10px] font-extrabold uppercase tracking-[0.16em] ${style.tag}`}>
+              Step 0{number}
+            </span>
+            <ChevronRight className="h-3 w-3 text-[#54665b]" />
+          </div>
+          <h3 className="text-3xl font-bold text-[#264d3d]">{title}</h3>
+          <div className="mt-2 space-y-2 text-sm leading-relaxed text-[#4c6156]">{children}</div>
         </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 export default function HowToUse() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden pt-16 pb-12 lg:pt-24 lg:pb-20 px-6">
+    <div className="min-h-screen space-y-8 pb-14">
+      <section className="heritage-shell px-6 pb-10 pt-12 sm:px-8 lg:px-10 lg:pt-14">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-96 bg-primary/10 blur-[120px] rounded-full -z-10"
+          className="absolute right-0 top-0 h-64 w-64 rounded-full bg-[#b69557]/18 blur-3xl"
         />
+        <div className="relative z-10 max-w-4xl">
+          <div className="heritage-kicker mb-6">
+            <Sparkles className="h-3.5 w-3.5" />
+            Interactive Guide
+          </div>
 
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/20 text-primary text-sm font-medium mb-8"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>Interactive Guide</span>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl lg:text-6xl font-black mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-base-content to-base-content/50"
-          >
-            Experience your family <br /> legacy in high-fidelity.
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg text-base-content/60 max-w-2xl mx-auto leading-relaxed"
-          >
-            A comprehensive guide to building, connecting, and visualizing your ancestral journey with our premium family mapping tools.
-          </motion.p>
+          <h1 className="text-5xl font-bold leading-[0.95] text-[#1f4537] sm:text-6xl lg:text-7xl">
+            Build your family tree
+            <br />
+            with confidence.
+          </h1>
+          <p className="mt-5 max-w-3xl text-base leading-relaxed text-[#4f6157] sm:text-lg">
+            Follow this flow to create families, register members, connect
+            relationships, and visualize a complete lineage map.
+          </p>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-5xl mx-auto px-6 pb-24 grid gap-8">
-        <StepCard number={1} title="Create a Family" icon={Home} color="blue">
+      <div className="grid gap-6">
+        <StepCard number={1} title="Create a Family" icon={Home} tone="green">
+          <p>Start by creating a family container to hold all related profiles.</p>
           <p>
-            Start by creating a family container. Think of this as your digital family vault.
-          </p>
-          <p className="text-sm italic">
-            Go to the <span className="font-semibold text-primary">Home</span> page and click "Create Family" to initialize your record.
+            Open <span className="font-semibold text-primary">Home</span> and click
+            <span className="font-semibold text-primary"> Create Family</span>.
           </p>
         </StepCard>
 
-        <StepCard number={2} title="Add Family Members" icon={Users} color="pink">
+        <StepCard number={2} title="Add Members" icon={Users} tone="gold">
+          <p>Register individuals with their details in the shared member registry.</p>
           <p>
-            Populate your database with individuals. Add names, genders, and biographical details.
-          </p>
-          <p className="text-sm italic">
-            Head to the <span className="font-semibold text-primary">Members</span> tab and click "Add Member" for each person.
+            Go to <span className="font-semibold text-primary">Members</span> and add
+            each person once.
           </p>
         </StepCard>
 
-        <StepCard number={3} title="Map to Families" icon={Pencil} color="yellow">
+        <StepCard number={3} title="Link to Family" icon={Pencil} tone="rust">
+          <p>Associate existing members with a selected family archive.</p>
           <p>
-            Assign members to their respective families. This builds the membership list for each group.
-          </p>
-          <p className="text-sm italic">
-            On the <span className="font-semibold text-primary">Family</span> page, use the pencil icon to associate members.
+            Open a family and use <span className="font-semibold text-primary">Add Existing Member</span>.
           </p>
         </StepCard>
 
-        <StepCard number={4} title="Define Relationships" icon={LinkIcon} color="purple">
+        <StepCard number={4} title="Define Relations" icon={LinkIcon} tone="green">
+          <p>Set spouse and child links inside each member profile.</p>
           <p>
-            Interconnect your members. Define marriages, partnerships, and parent-child links.
-          </p>
-          <p className="text-sm italic">
-            Open a family member's profile and click "Add Relation". Our system syncs both profiles instantly.
+            These links update the tree structure used in visualization.
           </p>
         </StepCard>
 
-        <StepCard number={5} title="Visualize the Journey" icon={TreePine} color="emerald">
+        <StepCard number={5} title="Visualize Tree" icon={TreePine} tone="gold">
+          <p>Open the family tree view to see branches arranged automatically.</p>
           <p>
-            The pinnacle of the experience—your interactive, auto-layout family tree.
-          </p>
-          <p className="text-sm italic">
-            Click <span className="font-semibold text-primary">"View My Family Tree"</span> to see a beautiful, zoomable graph of your lineage.
+            Switch between vertical and horizontal layouts at any time.
           </p>
         </StepCard>
 
-        {/* Note on Performance */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-12 p-8 rounded-3xl bg-blue-500/5 border border-blue-500/20 text-center relative overflow-hidden group"
+          className="rounded-[1.7rem] border border-[#7a9bc0]/35 bg-[#edf4fb]/70 p-7 text-center shadow-[0_16px_36px_-26px_rgba(20,58,45,0.42)]"
         >
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
-          <Info className="w-10 h-10 text-blue-500 mx-auto mb-4 opacity-50 group-hover:scale-110 transition-transform duration-500" />
-          <h4 className="text-lg font-bold mb-2">Architectural Note</h4>
-          <p className="text-base-content/60 max-w-xl mx-auto text-sm leading-relaxed">
-            We utilize high-performance cloud infrastructure including Neon's serverless PostgreSQL.
-            On the first request, the database may undergo a brief "cold start"—we appreciate your patience as the system scales to meet your request.
+          <Info className="mx-auto mb-3 h-8 w-8 text-[#3d6e98]" />
+          <h4 className="text-2xl font-bold text-[#2f4f66]">Performance Note</h4>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-[#425f74]">
+            If the database has been inactive, the first request can take longer than
+            usual due to cold start behavior.
           </p>
         </motion.div>
 
@@ -148,16 +147,18 @@ export default function HowToUse() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center py-12"
+          className="py-4 text-center"
         >
-          <h2 className="text-3xl font-black mb-4">Your legacy starts here.</h2>
+          <h2 className="text-4xl font-bold text-[#254a3a]">Ready to map your lineage?</h2>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 rounded-2xl bg-primary text-primary-content font-bold shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"
-            onClick={() => window.location.href = "/"}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            className="mt-4 rounded-xl bg-primary px-8 py-3 text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground shadow-[0_18px_40px_-24px_hsl(var(--primary)/0.8)]"
+            onClick={() => {
+              window.location.href = "/";
+            }}
           >
-            Start Building Now
+            Start Building
           </motion.button>
         </motion.div>
       </div>

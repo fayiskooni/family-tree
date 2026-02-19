@@ -25,83 +25,43 @@ const SignUpPage = () => {
   const errorMessage = error?.response?.data?.message || error?.message || (error ? "Identity registration failed" : null);
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 relative overflow-hidden bg-base-100">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -ml-64 -mt-64 -z-10" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/5 blur-[100px] rounded-full -mr-32 -mb-32 -z-10" />
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_88%_15%,rgba(30,78,60,0.16),transparent_30%),radial-gradient(circle_at_10%_10%,rgba(191,164,106,0.18),transparent_28%),linear-gradient(180deg,#f9f4e9_0%,#f1e9db_100%)]" />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-5xl grid lg:grid-cols-2 bg-base-100 rounded-[2.5rem] border border-base-content/5 shadow-2xl overflow-hidden"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 grid w-full max-w-5xl overflow-hidden rounded-[2rem] border border-[#b6a77f]/35 bg-[#fffaf0]/85 shadow-[0_34px_80px_-42px_rgba(20,58,45,0.65)] lg:grid-cols-2"
       >
-        {/* Visual Side */}
-        <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden bg-base-content/5">
-          <div className="absolute inset-0 opacity-10 pointer-events-none">
-            <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,var(--primary)_0%,transparent_50%)]" />
-          </div>
-
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-8">
-              <div className="p-2 rounded-xl bg-primary text-primary-content shadow-lg shadow-primary/20">
-                <TreeDeciduous className="size-5" />
-              </div>
-              <span className="font-black uppercase tracking-[0.3em] text-[10px] opacity-40 text-base-content">Heritage Archive</span>
-            </div>
-            <h2 className="text-4xl font-black tracking-tighter leading-tight mb-6">
-              Begin your<br />
-              <span className="text-primary italic font-medium">ancestral journey.</span>
-            </h2>
-          </div>
-
-          <div className="relative z-10 mt-auto space-y-4">
-            {[
-              "Secure identity encryption",
-              "World-wide lineage mapping",
-              "Infinite generational depth"
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <CheckCircle2 className="size-3" />
-                </div>
-                <span className="text-xs font-bold text-base-content/60">{feature}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Form Side */}
-        <div className="p-8 lg:p-16 flex flex-col justify-center border-l border-base-content/5">
-          <div className="max-w-sm mx-auto w-full">
-            <div className="mb-10 text-center lg:text-left">
-              <h1 className="text-3xl font-black tracking-tight mb-2">Create Record</h1>
-              <p className="text-sm text-base-content/40 font-medium">Join the global network of lineage preservation.</p>
-            </div>
+        <section className="p-7 sm:p-10 lg:p-12">
+          <div className="mx-auto w-full max-w-sm">
+            <h1 className="text-4xl font-bold text-[#214736]">Create Account</h1>
+            <p className="mt-1 text-sm text-[#52645a]">Start building your family archive.</p>
 
             <AnimatePresence mode="wait">
               {errorMessage && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mb-8"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-6"
                 >
-                  <div className="p-4 rounded-2xl bg-error/10 border border-error/20 flex items-center gap-3 text-error">
-                    <AlertCircle className="size-5 shrink-0" />
-                    <span className="text-xs font-bold tracking-tight">{errorMessage}</span>
+                  <div className="flex items-center gap-3 rounded-xl border border-destructive/25 bg-destructive/10 px-4 py-3 text-destructive">
+                    <AlertCircle className="size-4 shrink-0" />
+                    <span className="text-xs font-semibold">{errorMessage}</span>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
 
-            <form onSubmit={handleSignup} className="space-y-6">
+            <form onSubmit={handleSignup} className="mt-7 space-y-5">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Identity Name</Label>
+                <Label>Full Name</Label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <User className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#5a6a61]" />
                   <Input
                     placeholder="Jordan Walker"
-                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    className="h-11 pl-10"
                     value={signupData.username}
                     onChange={(e) => setSignupData({ ...signupData, username: e.target.value })}
                     required
@@ -110,13 +70,13 @@ const SignUpPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Archive Email</Label>
+                <Label>Archive Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#5a6a61]" />
                   <Input
                     type="email"
                     placeholder="jordan@legacy.com"
-                    className="h-12 pl-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    className="h-11 pl-10"
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                     required
@@ -125,13 +85,13 @@ const SignUpPage = () => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest opacity-40 ml-1">Security Pattern</Label>
+                <Label>Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-base-content/20" />
+                  <Lock className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-[#5a6a61]" />
                   <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
-                    className="h-12 pl-11 pr-11 rounded-2xl border-base-content/10 bg-base-content/5 focus:bg-base-100 transition-all"
+                    placeholder="........"
+                    className="h-11 pl-10 pr-10"
                     value={signupData.password}
                     onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                     required
@@ -139,43 +99,78 @@ const SignUpPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/20 hover:text-base-content/40 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5a6a61] transition-colors hover:text-[#2f4f40]"
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
-                <p className="text-[9px] font-bold text-base-content/30 ml-1 italic italic">Minimum 6 alphanumeric characters required</p>
+                <p className="text-[10px] text-[#5c6d63]">Minimum 6 alphanumeric characters required.</p>
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-12 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 gap-2"
+                className="h-11 w-full gap-2 rounded-xl text-xs uppercase tracking-[0.14em]"
                 disabled={isPending}
               >
                 {isPending ? (
                   <>
                     <Loader2 className="size-4 animate-spin" />
-                    Registering...
+                    Registering
                   </>
                 ) : (
                   <>
-                    Commit Record
+                    Create Account
                     <ArrowRight className="size-4" />
                   </>
                 )}
               </Button>
             </form>
 
-            <div className="mt-10 text-center">
-              <p className="text-xs font-medium text-base-content/40">
-                Already registered?{" "}
-                <Link to="/login" className="text-primary font-black hover:underline underline-offset-4 tracking-tight">
-                  Initialize Session
-                </Link>
-              </p>
-            </div>
+            <p className="mt-8 text-center text-xs text-[#52645a]">
+              Already have an account?{" "}
+              <Link to="/login" className="font-bold text-primary underline-offset-4 hover:underline">
+                Sign in
+              </Link>
+            </p>
           </div>
-        </div>
+        </section>
+
+        <aside className="relative hidden flex-col justify-between border-l border-[#b6a77f]/28 bg-[#1f4537] p-10 text-[#f8f1e4] lg:flex">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_12%,rgba(214,187,128,0.2),transparent_34%),radial-gradient(circle_at_18%_90%,rgba(250,240,220,0.12),transparent_28%)]" />
+
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-3 rounded-xl border border-[#d5bd89]/25 bg-[#f8f0dd]/10 px-4 py-3">
+              <div className="rounded-lg bg-[#d5bd89]/25 p-2">
+                <TreeDeciduous className="size-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#f0dec0]/80">Heritage</p>
+                <p className="text-lg font-bold">Family Tree Archive</p>
+              </div>
+            </div>
+
+            <h2 className="mt-12 text-5xl font-bold leading-tight">
+              Build your
+              <br />
+              archive from
+              <br />
+              the first branch.
+            </h2>
+          </div>
+
+          <div className="relative z-10 space-y-4 rounded-2xl border border-[#d5bd89]/28 bg-[#f8f0dd]/10 p-5">
+            {[
+              "Secure private access",
+              "Shared member records",
+              "Visual family tree mapping",
+            ].map((feature, i) => (
+              <div key={i} className="flex items-center gap-3 text-sm text-[#eadcbf]">
+                <CheckCircle2 className="size-4 text-[#d5bd89]" />
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+        </aside>
       </motion.div>
     </div>
   );

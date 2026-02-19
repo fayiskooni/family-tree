@@ -7,7 +7,6 @@ import {
   updateMember,
 } from "../lib/api";
 import MemberCard from "../components/MemberCard";
-import NoMembersFound from "../components/NoMembersFound";
 import {
   Dialog,
   DialogClose,
@@ -29,7 +28,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserPlus, Sparkles, Users, Search, Plus } from "lucide-react";
+import { UserPlus, Sparkles, Users, Plus, Contact } from "lucide-react";
 
 const MembersPage = () => {
   const queryClient = useQueryClient();
@@ -83,170 +82,184 @@ const MembersPage = () => {
   };
 
   return (
-    <div className="min-h-screen pb-20 overflow-x-hidden">
-      {/* Hero Section */}
-      <div className="relative pt-12 pb-16 px-8 lg:px-12 overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/5 blur-[120px] rounded-full -mr-48 -mt-48 -z-10" />
-
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-2 mb-6"
-          >
-            <div className="p-2 rounded-lg bg-primary/10 text-primary">
-              <Sparkles className="size-4" />
+    <div className="min-h-screen space-y-8 pb-14">
+      <section className="heritage-shell p-6 sm:p-8 lg:p-10">
+        <div className="absolute inset-y-0 right-0 w-2/5 bg-[radial-gradient(circle_at_70%_35%,rgba(32,80,62,0.18),transparent_56%)]" />
+        <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <div className="heritage-kicker mb-6">
+              <Sparkles className="size-3.5" />
+              People Registry
             </div>
-            <span className="text-xs font-black uppercase tracking-[0.3em] text-base-content/60">Member Directory</span>
-          </motion.div>
+            <h1 className="text-5xl font-bold leading-[0.95] text-[#1f4537] sm:text-6xl lg:text-7xl">
+              Every person,
+              <br />
+              one record at a time.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-[#4f6157] sm:text-lg">
+              Add individuals once, then reuse them across families to build cleaner,
+              richer relationship trees.
+            </p>
+          </div>
 
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <h1 className="text-5xl lg:text-7xl font-black tracking-tight mb-4 text-base-content">
-                The <br />
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/60">People.</span>
-              </h1>
-              <p className="text-base-content/60 text-lg max-w-xl font-medium leading-relaxed">
-                Manage individuals in your database. These entries serve as the building blocks for your intricate family trees.
-              </p>
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
+            className="w-full max-w-xs"
+          >
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="h-14 w-full gap-2 rounded-2xl text-sm uppercase tracking-[0.14em]">
+                  <UserPlus className="size-5" />
+                  Add Member
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Register Member</DialogTitle>
+                </DialogHeader>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button size="lg" className="h-16 px-8 rounded-2xl bg-primary text-primary-foreground shadow-2xl shadow-primary/20 hover:shadow-primary/40 transition-all duration-500 font-black text-lg gap-3">
-                    <UserPlus className="size-6" />
-                    Register New Member
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md rounded-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-black">Register Member</DialogTitle>
-                  </DialogHeader>
-                  <div className="grid gap-6 py-6 max-h-[70vh] overflow-y-auto px-1">
+                <div className="grid max-h-[70vh] gap-5 overflow-y-auto py-2 pr-1">
+                  <div className="space-y-2">
+                    <Label>Full Name</Label>
+                    <Input
+                      value={member.name}
+                      className="h-11"
+                      onChange={(e) => setMember({ ...member, name: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Full Name</Label>
+                      <Label>Gender</Label>
+                      <Select
+                        value={member.gender === "" ? "" : String(member.gender)}
+                        onValueChange={(v) => setMember({ ...member, gender: v === "true" })}
+                      >
+                        <SelectTrigger className="h-11">
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">Male</SelectItem>
+                          <SelectItem value="false">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Age</Label>
                       <Input
-                        value={member.name}
-                        className="rounded-xl h-12 border-base-content/20 focus:border-primary transition-all"
-                        onChange={(e) => setMember({ ...member, name: e.target.value })}
+                        type="number"
+                        value={member.age}
+                        className="h-11"
+                        onChange={(e) => setMember({ ...member, age: e.target.value })}
                         required
                       />
                     </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Gender</Label>
-                        <Select
-                          value={member.gender === "" ? "" : String(member.gender)}
-                          onValueChange={(v) => setMember({ ...member, gender: v === "true" })}
-                        >
-                          <SelectTrigger className="rounded-xl h-12 border-base-content/20">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl">
-                            <SelectItem value="true">Male</SelectItem>
-                            <SelectItem value="false">Female</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Age</Label>
-                        <Input
-                          type="number"
-                          value={member.age}
-                          className="rounded-xl h-12 border-base-content/20"
-                          onChange={(e) => setMember({ ...member, age: e.target.value })}
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Birth Date (Optional)</Label>
-                        <Input
-                          type="date"
-                          value={member.date_of_birth}
-                          className="rounded-xl h-12 border-base-content/20"
-                          onChange={(e) => setMember({ ...member, date_of_birth: e.target.value })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Death Date (Optional)</Label>
-                        <Input
-                          type="date"
-                          value={member.date_of_death}
-                          className="rounded-xl h-12 border-base-content/20"
-                          onChange={(e) => setMember({ ...member, date_of_death: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-60">Blood Group (Optional)</Label>
+                      <Label>Birth Date (Optional)</Label>
                       <Input
-                        placeholder="e.g. AB+"
-                        value={member.blood_group}
-                        className="rounded-xl h-12 border-base-content/20"
-                        onChange={(e) => setMember({ ...member, blood_group: e.target.value })}
+                        type="date"
+                        value={member.date_of_birth}
+                        className="h-11"
+                        onChange={(e) => setMember({ ...member, date_of_birth: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Death Date (Optional)</Label>
+                      <Input
+                        type="date"
+                        value={member.date_of_death}
+                        className="h-11"
+                        onChange={(e) => setMember({ ...member, date_of_death: e.target.value })}
                       />
                     </div>
                   </div>
-                  <DialogFooter className="mt-4">
-                    <DialogClose asChild>
-                      <Button variant="ghost" className="rounded-xl">Cancel</Button>
-                    </DialogClose>
-                    <Button
-                      onClick={handleClick}
-                      className="rounded-xl px-10 shadow-lg shadow-primary/20 bg-primary text-primary-foreground font-bold hover:opacity-90 transition-opacity"
-                    >
-                      Create Member
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </motion.div>
-          </div>
-        </div>
-      </div>
 
-      <div className="px-8 lg:px-12 max-w-7xl mx-auto">
-        <div className="h-px w-full bg-base-content/5 mb-16" />
+                  <div className="space-y-2">
+                    <Label>Blood Group (Optional)</Label>
+                    <Input
+                      placeholder="e.g. AB+"
+                      value={member.blood_group}
+                      className="h-11"
+                      onChange={(e) => setMember({ ...member, blood_group: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <DialogFooter className="mt-2">
+                  <DialogClose asChild>
+                    <Button variant="ghost">Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={handleClick} className="px-7">
+                    Save Member
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="space-y-5">
+        <div className="flex flex-col gap-4 rounded-2xl border border-[#b6a77f]/30 bg-[#f8f2e6]/65 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-primary/12 p-2 text-primary">
+              <Contact className="size-4" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold text-[#244838]">Member Library</h2>
+              <p className="text-sm text-[#506258]">
+                {members.data?.length || 0} registered member(s)
+              </p>
+            </div>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full gap-2 sm:w-auto"
+            onClick={() => setOpen(true)}
+          >
+            <Plus className="size-4" />
+            Add Member
+          </Button>
+        </div>
 
         {loadingMembers ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-            <p className="text-xs font-black uppercase tracking-widest text-base-content/60">Accessing Records...</p>
+          <div className="heritage-panel flex flex-col items-center justify-center gap-4 py-20 text-center">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+            <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#54665b]">
+              Accessing Records...
+            </p>
           </div>
         ) : !members.data || members.data.length === 0 ? (
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 26 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-20 text-center"
+            className="heritage-panel flex flex-col items-center justify-center px-6 py-20 text-center"
           >
-            <div className="w-24 h-24 rounded-3xl bg-base-content/5 flex items-center justify-center mb-8 border border-base-content/5">
-              <Users className="size-10 text-base-content/20" />
+            <div className="mb-6 rounded-3xl border border-[#b6a77f]/35 bg-[#f3e9d4] p-5 text-primary">
+              <Users className="size-10" />
             </div>
-            <h3 className="text-2xl font-black mb-2 tracking-tight">Empty Registry</h3>
-            <p className="text-base-content/40 max-w-sm mb-10 font-medium">Capture your first family member to begin building your digital lineage.</p>
-            <Button onClick={() => setOpen(true)} className="rounded-xl px-10 h-12 shadow-xl shadow-primary/10 bg-primary text-primary-foreground">Register Now</Button>
+            <h3 className="text-4xl font-bold text-[#234839]">No Members Yet</h3>
+            <p className="mt-2 max-w-md text-[#516359]">
+              Add your first person to begin building family relationships.
+            </p>
+            <Button onClick={() => setOpen(true)} className="mt-8 rounded-xl px-8">
+              Register First Member
+            </Button>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="heritage-grid">
             <AnimatePresence mode="popLayout">
               {members.data.map((m, index) => (
                 <motion.div
                   key={m.member_id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
@@ -264,16 +277,18 @@ const MembersPage = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: members.data.length * 0.05 }}
               onClick={() => setOpen(true)}
-              className="group h-32 rounded-[2rem] border-2 border-dashed border-base-content/10 flex flex-col items-center justify-center gap-2 hover:border-primary/40 hover:bg-primary/5 transition-all duration-500 cursor-pointer text-base-content/40 hover:text-primary"
+              className="group flex h-44 cursor-pointer flex-col items-center justify-center gap-3 rounded-[1.8rem] border-2 border-dashed border-[#b6a77f]/45 bg-[#faf4e8]/70 text-[#4c6358] transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-[#f4ebda]"
             >
-              <div className="p-3 rounded-xl bg-base-content/5 group-hover:bg-primary/10 transition-colors">
-                <Plus className="size-4" />
+              <div className="rounded-2xl bg-[#efe2c8] p-4 text-primary transition-transform duration-300 group-hover:scale-105">
+                <Plus className="size-6" />
               </div>
-              <span className="font-black text-[10px] uppercase tracking-widest">Add Member</span>
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.16em]">
+                Add Member
+              </span>
             </motion.div>
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

@@ -19,18 +19,15 @@ import { Plus, Save, UserCircle, Heart, Baby, Calendar, Droplets, ArrowLeft, Loa
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
-  // If it's an ISO string, just take the date part
-  return dateString.includes('T') ? dateString.split('T')[0] : dateString;
+  return dateString.includes("T") ? dateString.split("T")[0] : dateString;
 };
 
 const MemberDetailsPage = () => {
@@ -104,18 +101,15 @@ const MemberDetailsPage = () => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Only attempt to add/update spouse if they aren't already married
       if (memberSpouse && !spouse?.data) {
         await addCoupleMutation.mutateAsync({ partnerId: memberSpouse });
-        // Also invalidate the spouse query for the partner
         queryClient.invalidateQueries({ queryKey: ["spouse", memberSpouse] });
       }
 
-      const validChildren = memberChild.filter(c => c !== "");
+      const validChildren = memberChild.filter((c) => c !== "");
       if (validChildren.length > 0) {
         await addChildMutation.mutateAsync({ children: validChildren });
-        // Invalidate children/parents queries for the selected children too
-        validChildren.forEach(childId => {
+        validChildren.forEach((childId) => {
           queryClient.invalidateQueries({ queryKey: ["member", childId] });
           queryClient.invalidateQueries({ queryKey: ["children", childId] });
         });
@@ -129,7 +123,7 @@ const MemberDetailsPage = () => {
         queryClient.invalidateQueries({ queryKey: ["allChildren"] }),
       ]);
 
-      setMemberChild([""]); // Reset child selection inputs
+      setMemberChild([""]);
       toast.success("Ancestral records updated");
     } catch (error) {
       toast.error("Failed to update genealogy");
@@ -143,214 +137,218 @@ const MemberDetailsPage = () => {
   const m = memberData?.data;
 
   return (
-    <div className="min-h-screen pb-20 overflow-x-hidden">
-      {/* Hero Header */}
-      <div className={`relative pt-12 pb-24 px-8 lg:px-12 overflow-hidden bg-gradient-to-b ${isMale ? 'from-blue-500/10' : 'from-pink-500/10'} to-transparent`}>
-        <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen space-y-8 pb-14">
+      <section className="heritage-shell p-6 sm:p-8 lg:p-10">
+        <div
+          className={`absolute inset-0 ${
+            isMale
+              ? "bg-[radial-gradient(circle_at_75%_30%,rgba(58,123,112,0.2),transparent_55%)]"
+              : "bg-[radial-gradient(circle_at_75%_30%,rgba(179,122,99,0.2),transparent_55%)]"
+          }`}
+        />
+        <div className="relative z-10">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate(-1)}
-            className="mb-8 rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest opacity-60 hover:opacity-100"
+            className="mb-6 gap-2 rounded-xl text-[11px] uppercase tracking-[0.14em]"
           >
             <ArrowLeft className="size-4" />
-            Go Back
+            Back
           </Button>
 
-          <div className="flex flex-col items-center text-center text-base-content">
+          <div className="flex flex-col items-center text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className={`w-28 h-28 rounded-[2.5rem] flex items-center justify-center border shadow-2xl mb-8 ${isMale ? 'bg-blue-500/10 border-blue-500/20 text-blue-600' : 'bg-pink-500/10 border-pink-500/20 text-pink-600'}`}
+              className={`mb-6 flex h-24 w-24 items-center justify-center rounded-[1.8rem] border ${
+                isMale
+                  ? "border-[#4c7f74]/30 bg-[#4c7f74]/12 text-[#2f6659]"
+                  : "border-[#b37a63]/30 bg-[#b37a63]/12 text-[#8d5845]"
+              }`}
             >
-              <UserCircle className="size-16" />
+              <UserCircle className="size-14" />
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-5xl lg:text-7xl font-black tracking-tighter mb-4 text-base-content"
-            >
+            <h1 className="text-5xl font-bold leading-none text-[#1f4537] sm:text-6xl lg:text-7xl">
               {m?.name}
-            </motion.h1>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="flex items-center gap-2"
-            >
-              <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest ${isMale ? 'bg-blue-500/20 text-blue-700' : 'bg-pink-500/20 text-pink-700'}`}>
+            </h1>
+            <div className="mt-4 flex items-center gap-2">
+              <span
+                className={`rounded-full px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.14em] ${
+                  isMale
+                    ? "bg-[#4c7f74]/16 text-[#2f6659]"
+                    : "bg-[#b37a63]/16 text-[#8d5845]"
+                }`}
+              >
                 {gender}
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-base-content/20" />
-              <span className="text-sm font-bold text-base-content/60 tracking-tight">{m?.age} Years Old</span>
-            </motion.div>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#4f6157]/35" />
+              <span className="text-sm font-semibold text-[#4f6157]">{m?.age} years old</span>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-5xl mx-auto px-8 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 text-base-content">
-
-          {/* Left Column: Stats */}
-          <div className="lg:col-span-1 space-y-4">
-            <div className="p-6 rounded-3xl bg-base-100 border border-base-content/10 shadow-sm space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 rounded-xl bg-base-content/10 text-base-content/60">
-                  <Calendar className="size-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60 leading-none mb-1">Born</span>
-                  <span className="font-bold tracking-tight text-base-content">{formatDate(m?.date_of_birth) || "Unknown"}</span>
-                </div>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <aside className="space-y-4 lg:col-span-1">
+          <div className="heritage-panel space-y-5 p-5 sm:p-6">
+            <div className="flex items-start gap-3 rounded-xl border border-[#b6a77f]/30 bg-[#fffaf0]/80 p-3">
+              <div className="rounded-lg bg-primary/12 p-2 text-primary">
+                <Calendar className="size-4" />
               </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 rounded-xl bg-base-content/10 text-base-content/60">
-                  <Heart className="size-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60 leading-none mb-1">Passed</span>
-                  <span className="font-bold tracking-tight text-base-content">{formatDate(m?.date_of_death) || "Present"}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 rounded-xl bg-base-content/10 text-base-content/60">
-                  <Droplets className="size-5" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60 leading-none mb-1">Blood Type</span>
-                  <span className="font-bold tracking-tight text-base-content">{m?.blood_group || "N/A"}</span>
-                </div>
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#4f6157]">Born</p>
+                <p className="font-semibold text-[#234939]">{formatDate(m?.date_of_birth) || "Unknown"}</p>
               </div>
             </div>
 
-            <Button
-              onClick={handleSave}
-              className="w-full h-14 rounded-2xl shadow-xl shadow-primary/20 font-black text-sm uppercase tracking-widest gap-3"
-              disabled={isSaving}
-            >
-              {isSaving ? <Loader2 className="size-5 animate-spin" /> : <Save className="size-5" />}
-              Commit Changes
-            </Button>
+            <div className="flex items-start gap-3 rounded-xl border border-[#b6a77f]/30 bg-[#fffaf0]/80 p-3">
+              <div className="rounded-lg bg-primary/12 p-2 text-primary">
+                <Heart className="size-4" />
+              </div>
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#4f6157]">Passed</p>
+                <p className="font-semibold text-[#234939]">{formatDate(m?.date_of_death) || "Present"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-xl border border-[#b6a77f]/30 bg-[#fffaf0]/80 p-3">
+              <div className="rounded-lg bg-primary/12 p-2 text-primary">
+                <Droplets className="size-4" />
+              </div>
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#4f6157]">Blood Type</p>
+                <p className="font-semibold text-[#234939]">{m?.blood_group || "N/A"}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Relations */}
-          <div className="lg:col-span-2 space-y-12">
-            <section>
-              <div className="flex items-center gap-3 mb-6">
-                <Heart className="size-5 text-primary" />
-                <h2 className="text-xl font-black tracking-tight text-base-content">Partner</h2>
-              </div>
+          <Button
+            onClick={handleSave}
+            className="h-12 w-full gap-2 rounded-xl text-xs uppercase tracking-[0.14em]"
+            disabled={isSaving}
+          >
+            {isSaving ? <Loader2 className="size-4 animate-spin" /> : <Save className="size-4" />}
+            Save Relations
+          </Button>
+        </aside>
 
-              {spouse?.data?.name ? (
-                <Link to={`/member/${isMale ? spouse.data.wife_id : spouse.data.husband_id}`}>
-                  <div className="p-5 rounded-3xl bg-primary/5 border border-primary/10 flex items-center justify-between group hover:bg-primary/10 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black">
-                        {spouse.data.name.charAt(0)}
-                      </div>
-                      <span className="font-bold tracking-tight text-base-content">{spouse.data.name}</span>
+        <section className="space-y-6 lg:col-span-2">
+          <div className="heritage-panel p-5 sm:p-6">
+            <div className="mb-4 flex items-center gap-2 text-primary">
+              <Heart className="size-4" />
+              <h2 className="text-3xl font-bold text-[#244b3a]">Partner</h2>
+            </div>
+
+            {spouse?.data?.name ? (
+              <Link to={`/member/${isMale ? spouse.data.wife_id : spouse.data.husband_id}`}>
+                <div className="group flex items-center justify-between rounded-2xl border border-[#b6a77f]/35 bg-[#fff9ef]/80 p-4 transition-colors hover:bg-[#fbf3e3]">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/12 font-bold text-primary">
+                      {spouse.data.name.charAt(0)}
                     </div>
-                    <ChevronRight className="size-4 text-primary group-hover:translate-x-1 transition-transform" />
+                    <span className="font-semibold text-[#234939]">{spouse.data.name}</span>
                   </div>
-                </Link>
-              ) : (
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Connect Spouse</Label>
-                  <Select value={memberSpouse} onValueChange={setMemberSpouse}>
-                    <SelectTrigger className="w-full h-12 rounded-2xl border-base-content/20">
-                      <SelectValue placeholder={`Find ${isMale ? "Partner" : "Partner"}`} />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl">
-                      {isMale
-                        ? unmarriedFemales.data?.map((f) => (
-                          <SelectItem key={f.member_id} value={String(f.member_id)}>{f.name}</SelectItem>
-                        ))
-                        : unmarriedMales.data?.map((m) => (
-                          <SelectItem key={m.member_id} value={String(m.member_id)}>{m.name}</SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                  <ChevronRight className="size-4 text-primary transition-transform group-hover:translate-x-1" />
                 </div>
-              )}
-            </section>
-
-            {(spouse?.data?.name || memberSpouse) ? (
-              <section>
-                <div className="flex items-center gap-3 mb-6">
-                  <Baby className="size-5 text-primary" />
-                  <h2 className="text-xl font-black tracking-tight">Lineage</h2>
-                </div>
-
-                <div className="space-y-4">
-                  {children?.data?.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-                      {children.data.map((c) => (
-                        <Link key={c.child_id} to={`/member/${c.child_id}`}>
-                          <div className="p-4 rounded-2xl bg-base-content/5 border border-base-content/5 flex items-center gap-3 group hover:border-primary/20 transition-all">
-                            <div className="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center font-black text-xs">
-                              {c.child_name.charAt(0)}
-                            </div>
-                            <span className="font-bold text-sm tracking-tight">{c.child_name}</span>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="space-y-4">
-                    <Label className="text-[10px] font-black uppercase tracking-widest opacity-60 ml-1">Add Children</Label>
-                    {memberChild.map((childId, index) => (
-                      <Select
-                        key={index}
-                        value={childId}
-                        onValueChange={(v) => {
-                          const n = [...memberChild];
-                          n[index] = v;
-                          setMemberChild(n);
-                        }}
-                      >
-                        <SelectTrigger className="w-full h-12 rounded-2xl border-base-content/10">
-                          <SelectValue placeholder={`Select Record ${index + 1}`} />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl">
-                          {allChildren.data?.map((child) => (
-                            <SelectItem key={child.member_id} value={String(child.member_id)}>{child.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ))}
-
-                    {memberChild[memberChild.length - 1] !== "" && (
-                      <Button
-                        variant="ghost"
-                        className="w-full rounded-2xl h-12 border-2 border-dashed border-base-content/10 hover:border-primary/20 hover:bg-primary/5 transition-all text-base-content/30 hover:text-primary gap-2"
-                        onClick={() => setMemberChild([...memberChild, ""])}
-                      >
-                        <Plus className="size-4" />
-                        Add Lineage Entry
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </section>
+              </Link>
             ) : (
-              <div className="p-8 rounded-3xl bg-base-content/5 border border-dashed border-base-content/10 flex flex-col items-center text-center gap-3">
-                <div className="p-3 rounded-2xl bg-base-content/5">
-                  <Heart className="size-6 text-base-content/20" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-sm">Add a Spouse First</h3>
-                  <p className="text-xs text-base-content/40 max-w-[200px]">You must establish a partnership before you can track lineage for this member.</p>
-                </div>
+              <div className="space-y-2">
+                <Label>Connect Spouse</Label>
+                <Select value={memberSpouse} onValueChange={setMemberSpouse}>
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select partner" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {isMale
+                      ? unmarriedFemales.data?.map((f) => (
+                          <SelectItem key={f.member_id} value={String(f.member_id)}>
+                            {f.name}
+                          </SelectItem>
+                        ))
+                      : unmarriedMales.data?.map((m) => (
+                          <SelectItem key={m.member_id} value={String(m.member_id)}>
+                            {m.name}
+                          </SelectItem>
+                        ))}
+                  </SelectContent>
+                </Select>
               </div>
             )}
           </div>
 
-        </div>
+          {(spouse?.data?.name || memberSpouse) ? (
+            <div className="heritage-panel p-5 sm:p-6">
+              <div className="mb-4 flex items-center gap-2 text-primary">
+                <Baby className="size-4" />
+                <h2 className="text-3xl font-bold text-[#244b3a]">Children</h2>
+              </div>
+
+              {children?.data?.length > 0 && (
+                <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {children.data.map((c) => (
+                    <Link key={c.child_id} to={`/member/${c.child_id}`}>
+                      <div className="group flex items-center gap-3 rounded-xl border border-[#b6a77f]/30 bg-[#fff9ef]/80 p-3 transition-colors hover:bg-[#fbf3e3]">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#efe2c8] text-xs font-bold text-[#2a4d3e]">
+                          {c.child_name.charAt(0)}
+                        </div>
+                        <span className="text-sm font-semibold text-[#234939]">{c.child_name}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <Label>Add Children</Label>
+                {memberChild.map((childId, index) => (
+                  <Select
+                    key={index}
+                    value={childId}
+                    onValueChange={(v) => {
+                      const n = [...memberChild];
+                      n[index] = v;
+                      setMemberChild(n);
+                    }}
+                  >
+                    <SelectTrigger className="h-11">
+                      <SelectValue placeholder={`Select child ${index + 1}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allChildren.data?.map((child) => (
+                        <SelectItem key={child.member_id} value={String(child.member_id)}>
+                          {child.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ))}
+
+                {memberChild[memberChild.length - 1] !== "" && (
+                  <Button
+                    variant="outline"
+                    className="h-11 w-full gap-2 border-dashed"
+                    onClick={() => setMemberChild([...memberChild, ""])}
+                  >
+                    <Plus className="size-4" />
+                    Add Another Child
+                  </Button>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="heritage-panel flex flex-col items-center gap-3 px-5 py-10 text-center">
+              <div className="rounded-2xl bg-[#efe2c8] p-3 text-primary">
+                <Heart className="size-6" />
+              </div>
+              <h3 className="text-2xl font-bold text-[#274c3c]">Connect a spouse first</h3>
+              <p className="max-w-sm text-sm text-[#4f6157]">
+                Add a partner relation before assigning children to this member.
+              </p>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

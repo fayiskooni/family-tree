@@ -15,10 +15,8 @@ import { useParams, Link } from "react-router";
 import { ArrowLeft, LayoutGrid, LayoutList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-// ✅ Create a single ELK instance
 const elk = new ELK();
 
-// ✅ ELK layout options for spacing and hierarchy
 const elkOptions = {
   "elk.algorithm": "layered",
   "elk.direction": "DOWN",
@@ -26,16 +24,13 @@ const elkOptions = {
   "elk.spacing.nodeNode": "80",
 };
 
-//  STEP 1: Build graph structure (nodes + edges)
 function buildFamilyGraph(members, couples, children) {
-  // create one node for each member
   const nodes = members.data.map((m) => ({
     id: String(m.member_id),
     data: { label: m.name },
     position: { x: 0, y: 0 },
   }));
 
-  // edges between husband and wife
   const coupleEdges = couples.data.map((c) => ({
     id: `couple-${c.couple_id}`,
     source: String(c.husband_id),
@@ -44,7 +39,6 @@ function buildFamilyGraph(members, couples, children) {
     style: { stroke: "blue" },
   }));
 
-  // edges from parents to children
   const parentEdges = [];
   children.data.forEach((child) => {
     const couple = couples.data.find((c) => c.couple_id === child.couple_id);
@@ -65,7 +59,6 @@ function buildFamilyGraph(members, couples, children) {
   return { nodes, edges: [...coupleEdges, ...parentEdges] };
 }
 
-// STEP 2: Ask ELK to layout the graph neatly
 async function getLayoutedElements(nodes, edges, options = {}) {
   const graph = {
     id: "root",
@@ -85,7 +78,6 @@ async function getLayoutedElements(nodes, edges, options = {}) {
 
   const layoutedGraph = await elk.layout(graph);
 
-  // convert ELK output into ReactFlow format
   const layoutedNodes = layoutedGraph.children.map((n) => ({
     id: n.id,
     data: { label: n.labels[0].text },
@@ -101,7 +93,6 @@ async function getLayoutedElements(nodes, edges, options = {}) {
   return { nodes: layoutedNodes, edges: layoutedEdges };
 }
 
-// STEP 3: Main FamilyFlow component
 export default function FamilyTreePage() {
   const { id } = useParams();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -138,7 +129,6 @@ export default function FamilyTreePage() {
   );
 
   useEffect(() => {
-    // Check if we have all the required data
     if (!members?.data || !couples?.data || !children?.data) return;
 
     const { nodes: ns, edges: es } = buildFamilyGraph(members, couples, children);
@@ -146,23 +136,27 @@ export default function FamilyTreePage() {
     getLayoutedElements(ns, es, elkOptions).then(({ nodes: ln, edges: le }) => {
       setNodes(ln);
       setEdges(le);
-      setTimeout(() => fitView(), 100); // Add slight delay to ensure rendering
+      setTimeout(() => fitView(), 100);
     });
   }, [members?.data, couples?.data, children?.data, fitView]);
 
-  // Add loading state
   if (loadingMembers || loadingCouples || loadingChildren) {
-    return <div className="flex justify-center items-center h-screen">Loading family tree...</div>;
+    return (
+      <div className="flex h-full min-h-[65vh] items-center justify-center">
+        <div className="heritage-panel flex items-center gap-3 px-5 py-3">
+          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary/25 border-t-primary" />
+          <span className="text-sm font-semibold text-[#2a4f3f]">Loading family tree...</span>
+        </div>
+      </div>
+    );
   }
 
-  // STEP 5: Allow switching between vertical & horizontal layout
   const handleLayoutChange = (direction) => {
     onLayout(direction);
   };
 
-  // STEP 6: Render graph
   return (
-    <div className="w-full h-full">
+    <div className="h-full w-full overflow-hidden rounded-[1.4rem] border border-[#b6a77f]/35 shadow-[0_26px_56px_-36px_rgba(20,58,45,0.65)]">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -170,36 +164,37 @@ export default function FamilyTreePage() {
         onEdgesChange={onEdgesChange}
         fitView
       >
-        <Panel position="top-left" className="flex gap-4 items-center bg-base-100/80 backdrop-blur-md p-2 rounded-2xl border border-base-content/10 shadow-xl m-4">
+        <Panel
+          position="top-left"
+          className="m-4 flex items-center gap-2 rounded-2xl border border-[#b6a77f]/40 bg-[#fff9ef]/92 p-2 shadow-[0_16px_34px_-24px_rgba(20,58,45,0.6)] backdrop-blur"
+        >
           <Link to="/">
-            <Button variant="ghost" size="sm" className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest">
-              <ArrowLeft className="size-4" />
-              Back to Home
+            <Button variant="outline" size="sm" className="gap-2 rounded-xl text-[10px] uppercase tracking-[0.14em]">
+              <ArrowLeft className="size-3.5" />
+              Home
             </Button>
           </Link>
-          <div className="h-4 w-px bg-base-content/10 mx-2" />
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest"
-              onClick={() => handleLayoutChange("DOWN")}
-            >
-              <LayoutList className="size-4" />
-              Vertical
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-xl gap-2 font-black text-[10px] uppercase tracking-widest"
-              onClick={() => handleLayoutChange("RIGHT")}
-            >
-              <LayoutGrid className="size-4" />
-              Horizontal
-            </Button>
-          </div>
+          <div className="mx-1 h-5 w-px bg-[#b6a77f]/40" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-2 rounded-xl text-[10px] uppercase tracking-[0.14em]"
+            onClick={() => handleLayoutChange("DOWN")}
+          >
+            <LayoutList className="size-3.5" />
+            Vertical
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-2 rounded-xl text-[10px] uppercase tracking-[0.14em]"
+            onClick={() => handleLayoutChange("RIGHT")}
+          >
+            <LayoutGrid className="size-3.5" />
+            Horizontal
+          </Button>
         </Panel>
-        <Background />
+        <Background color="rgba(45,82,67,0.18)" gap={24} size={1.2} />
       </ReactFlow>
     </div>
   );

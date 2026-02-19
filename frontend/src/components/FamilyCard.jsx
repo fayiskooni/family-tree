@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Pencil, Trash2, FolderHeart, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const FamilyCard = ({ family, onEdit, onDelete }) => {
   const [open, setOpen] = useState(false);
@@ -40,15 +40,15 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -5 }}
-      className="group relative h-48 rounded-[2.5rem] bg-base-100 border border-base-content/5 overflow-hidden shadow-xl hover:shadow-primary/10 transition-all duration-500 cursor-pointer"
+      whileHover={{ y: -4 }}
+      className="group relative h-52 cursor-pointer overflow-hidden rounded-[1.8rem] border border-[#b6a77f]/40 bg-[#fffcf5]/85 shadow-[0_22px_50px_-30px_rgba(20,58,45,0.55)] transition-all duration-500"
     >
-      {/* Decorative background element */}
-      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/5 blur-3xl rounded-full group-hover:scale-150 transition-transform duration-700" />
+      <div className="absolute inset-0 bg-[linear-gradient(150deg,rgba(31,69,55,0.07),transparent_42%,rgba(190,163,104,0.13))]" />
+      <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#c3a766]/22 blur-3xl transition-transform duration-700 group-hover:scale-125" />
 
-      <div className="h-full p-8 flex flex-col justify-between relative z-10">
+      <div className="relative z-10 flex h-full flex-col justify-between p-6">
         <div className="flex items-start justify-between">
-          <div className="p-3.5 rounded-2xl bg-primary/5 text-primary">
+          <div className="rounded-2xl border border-[#b6a77f]/45 bg-[#f3ebda]/90 p-3 text-primary">
             <FolderHeart className="size-6" />
           </div>
 
@@ -57,27 +57,30 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
               <Button
                 size="icon"
                 variant="ghost"
-                className="rounded-xl hover:bg-base-content/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="rounded-xl text-[#3a5a4b]/70 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[#ece1cb]"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
                   setOpen(true);
                 }}
               >
-                <Pencil className="size-4 text-base-content/40" />
+                <Pencil className="size-4" />
               </Button>
 
-              <DialogContent className="sm:max-w-[425px] rounded-3xl" onClick={(e) => e.stopPropagation()}>
+              <DialogContent
+                className="sm:max-w-[425px]"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-black">Edit Legacy Name</DialogTitle>
+                  <DialogTitle>Edit Family Name</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-6 py-6">
+                <div className="grid gap-5 py-4">
                   <div className="space-y-2">
-                    <Label htmlFor="editName" className="text-xs font-bold uppercase tracking-widest opacity-40">Family Name</Label>
+                    <Label htmlFor="editName">Family Name</Label>
                     <Input
                       id="editName"
                       value={editName}
-                      className="rounded-xl border-base-content/10 focus:ring-primary h-12"
+                      className="h-11"
                       onChange={(e) => {
                         e.stopPropagation();
                         setEditName(e.target.value);
@@ -85,25 +88,30 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
                     />
                   </div>
                 </div>
-                <DialogFooter className="flex-col sm:flex-row gap-3 mt-4">
+                <DialogFooter className="mt-2 flex-col gap-3 sm:flex-row">
                   <Button
                     variant="ghost"
-                    className="flex-1 rounded-xl text-error hover:bg-error/10"
+                    className="flex-1 text-destructive hover:bg-destructive/10"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete();
                     }}
                   >
-                    <Trash2 className="size-4 mr-2" /> Delete Record
+                    <Trash2 className="mr-2 size-4" /> Delete
                   </Button>
-                  <div className="flex gap-2 flex-1">
+                  <div className="flex flex-1 gap-2">
                     <DialogClose asChild>
-                      <Button variant="outline" className="flex-1 rounded-xl">Cancel</Button>
+                      <Button variant="outline" className="flex-1">
+                        Cancel
+                      </Button>
                     </DialogClose>
-                    <Button onClick={(e) => {
-                      e.stopPropagation();
-                      handleSave();
-                    }} className="flex-1 rounded-xl shadow-lg shadow-primary/20">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSave();
+                      }}
+                      className="flex-1"
+                    >
                       Update
                     </Button>
                   </div>
@@ -114,12 +122,12 @@ const FamilyCard = ({ family, onEdit, onDelete }) => {
         </div>
 
         <div>
-          <h3 className="text-2xl font-black tracking-tight mb-2 group-hover:text-primary transition-colors line-clamp-1">
+          <h3 className="line-clamp-1 text-3xl font-bold tracking-wide text-[#224938] transition-colors group-hover:text-primary">
             {family.family_name}
           </h3>
-          <div className="flex items-center gap-2 text-base-content/40 font-bold text-xs uppercase tracking-widest">
+          <div className="mt-2 flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#4a6156]/80">
             <span>Open Legacy</span>
-            <ArrowRight className="size-3 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
           </div>
         </div>
       </div>
