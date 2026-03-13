@@ -31,7 +31,7 @@
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
 	"vars": {
-		"FRONTEND_URL": "https://family-tree.fayiskooni.workers.dev",
+		"FRONTEND_URL": "https://familytree.fayiskooni.xyz",
 		"NODE_ENV": "production",
 		"DATABASE_SSL": "true",
 		"SALT_ROUND": "10",
